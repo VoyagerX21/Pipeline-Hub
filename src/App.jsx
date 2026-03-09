@@ -23,7 +23,7 @@ function DashboardLayout() {
   const fetchEvents = async () => {
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/events/list/${user.username}`,
+        `${import.meta.env.VITE_API_URL}/events/list/${user._id}`,
         { credentials: "include" }
       );
 
