@@ -5,7 +5,7 @@ export default function EventRow({ event, onClick, selected }) {
   const provider = event.provider || event.platform || "github";
   const type = event.type || event.eventType || "unknown";
   const repo = event.repositoryId?.name || event.repository?.name || event.repo || "unknown-repo";
-  const actor = event.senderId?.username || event.sender?.username || event.actor || "unknown";
+  const actor = event.senderId?.name || event.sender?.username || event.actor || "unknown";
   const timestamp = event.eventTimestamp || event.ts || event.timestamp || event.createdAt || Date.now();
   const typeLabel = String(type).replace("_", " ");
   const typeColor = EVENT_COLORS[type] || "#64748b";

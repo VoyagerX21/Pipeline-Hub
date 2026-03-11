@@ -159,14 +159,46 @@ export default function ProfilePanel({ onClose }) {
   const { user } = useContext(UserContext);
 
   const [providers, setProviders] = useState({});
-  const [channel, setChannel] = useState(user.slackChannel || "");
-  const [token, setToken] = useState(user.slackToken || "");
+  const [channel, setChannel] = useState(providers.slackChannel || "");
+  const [token, setToken] = useState(providers.slackURL || "");
+  const [saveError, setSaveError] = useState(null);
   const [keyOverlay, setKeyOverlay] = useState(null); // { platform, key }
 
-  const handleSave = () => {
-    onSave({ slackChannel: channel, slackToken: token });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const handleSave = async () => {
+    setSaveError(null);
+
+    const hasChannel = channel.trim() !== "";
+    const hasToken = token.trim() !== "";
+    if (hasChannel !== hasToken) {
+      setSaveError(
+        "Both Slack Channel and Slack Token must be provided together, or both left empty.",
+      );
+      return;
+    }
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/user/updateConfig/${user._id}`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slackChannel: channel, slackToken: token }),
+        },
+      );
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setSaveError(
+          data.message || "Failed to save configuration. Please try again.",
+        );
+        return;
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      setSaveError(
+        "Network error. Please check your connection and try again.",
+      );
+    }
   };
 
   const connectPlatform = (provider) => {
@@ -182,14 +214,16 @@ export default function ProfilePanel({ onClose }) {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/auth/providers/${user._id}`,
         {
-          credentials: "include"
-        }
+          credentials: "include",
+        },
       );
 
       const data = await res.json();
 
       if (data.success) {
         setProviders(data.providers);
+        setChannel(data.providers.slackChannel || "");
+        setToken(data.providers.slackURL || "");
       }
     };
 
@@ -251,7 +285,16 @@ export default function ProfilePanel({ onClose }) {
             onMouseLeave={(e) => (e.currentTarget.style.background = "#1e2330")}
           >
             {/* Eye icon SVG */}
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
               <circle cx="12" cy="12" r="3" />
             </svg>
@@ -363,7 +406,11 @@ export default function ProfilePanel({ onClose }) {
 
             {platformRow("GitHub", providers?.github, providers?.githubkey)}
             {platformRow("GitLab", providers?.gitlab, providers?.gitlabkey)}
-            {platformRow("Bitbucket", providers?.bitbucket, providers?.bitbucketkey)}
+            {platformRow(
+              "Bitbucket",
+              providers?.bitbucket,
+              providers?.bitbucketkey,
+            )}
           </div>
 
           {/* Slack config */}
@@ -427,12 +474,43 @@ export default function ProfilePanel({ onClose }) {
               placeholder="xoxb-..."
               style={inputStyle}
             />
-
+            {!channel.trim() && !token.trim() && (
+              <div
+                style={{
+                  fontSize: 11,
+                  color: "#f59e0b",
+                  marginTop: 6,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                }}
+              >
+                <span>⚠</span> You will not be notified on any Slack channel.
+              </div>
+            )}
             <div style={{ fontSize: 11, color: "#334155", marginTop: 6 }}>
               Notifications will be sent to your configured Slack channel only.
             </div>
           </div>
-
+          {saveError && (
+            <div
+              style={{
+                background: "#1a0a0a",
+                border: "1px solid #7f1d1d",
+                borderRadius: 8,
+                padding: "9px 12px",
+                marginBottom: 12,
+                fontSize: 12,
+                color: "#f87171",
+                display: "flex",
+                gap: 6,
+                alignItems: "flex-start",
+              }}
+            >
+              <span style={{ flexShrink: 0 }}>⚠</span>
+              <span>{saveError}</span>
+            </div>
+          )}
           <button
             onClick={handleSave}
             style={{

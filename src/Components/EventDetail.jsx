@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function EventDetail({ event, onClose }) {
   const [isPayloadExpanded, setIsPayloadExpanded] = useState(false);
-
+  
   if (!event) {
     return (
       <div
@@ -26,7 +26,7 @@ export default function EventDetail({ event, onClose }) {
   }
 
   const repo = event.repositoryId?.name || "unknown-repo";
-  const actor = event.senderId?.username || "unknown-user";
+  const actor = event.senderId?.name || "unknown-user";
   const timestamp = new Date(event.eventTimestamp);
 
   return (
