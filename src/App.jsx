@@ -92,11 +92,36 @@ function DashboardLayout() {
 export default function App() {
 
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_API_URL}/auth/me`,
+          { credentials: "include" }
+        );
+
+        const data = await res.json();
+
+        if (data.success) {
+          setUser(data.user);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+
+      setLoading(false);
+    };
+
+    fetchUser();
+  }, []);
+
+  if (loading) return null;
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
       <BrowserRouter>
-
         <Routes>
 
           <Route
@@ -118,7 +143,6 @@ export default function App() {
           />
 
         </Routes>
-
       </BrowserRouter>
     </UserContext.Provider>
   );
