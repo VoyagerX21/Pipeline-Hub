@@ -21,7 +21,7 @@ export default function ReposPanel() {
   }, []);
 
   return (
-    <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
+    <div style={{ flex: 1, overflowY: "auto", padding: 24, height: "100%" }}>
       <div style={{ fontSize: 16, fontWeight: 800, color: "#f1f5f9", marginBottom: 6, letterSpacing: "-0.3px" }}>
         Repositories
       </div>
