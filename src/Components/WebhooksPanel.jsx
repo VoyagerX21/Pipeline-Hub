@@ -67,7 +67,7 @@ function MiniBarChart({ data, loading }) {
           <div
             key={i}
             style={{
-              flex: 1,
+              width: 32,
               background: "#1e2330",
               borderRadius: "3px 3px 0 0",
               animation: "pulse 1.4s infinite",
@@ -82,16 +82,38 @@ function MiniBarChart({ data, loading }) {
   const max = Math.max(...data.map(d => d.count), 1);
 
   return (
-    <div style={{ display: "flex", gap: 6, alignItems: "flex-end", height: 60 }}>
+    <div style={{ display: "flex", gap: 6, alignItems: "flex-end", height: 70 }}>
       {data.map((d, i) => (
-        <div key={i} style={{ flex: 1 }}>
+        <div
+          key={i}
+          style={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 4
+          }}
+        >
           <div
+            title={`${d.date}: ${d.count}`}
             style={{
-              height: `${(d.count / max) * 52}px`,
+              width: "100%",
+              height: `${Math.max(4, (d.count / max) * 52)}px`,
               background: "linear-gradient(to top,#3b82f6,#60a5fa)",
-              borderRadius: "3px 3px 0 0"
+              borderRadius: "3px 3px 0 0",
+              transition: "height 0.3s ease"
             }}
           />
+
+          <span
+            style={{
+              fontSize: 9,
+              color: "#334155",
+              fontFamily: "monospace"
+            }}
+          >
+            {d.date}
+          </span>
         </div>
       ))}
     </div>
@@ -210,7 +232,16 @@ export default function WebhooksPanel() {
   }, []);
 
   useEffect(() => {
+    // initial load
     loadAll();
+
+    // auto refresh every 30 seconds
+    const interval = setInterval(() => {
+      loadAll();
+    }, 30000);
+
+    // cleanup
+    return () => clearInterval(interval);
   }, [loadAll]);
 
   return (
