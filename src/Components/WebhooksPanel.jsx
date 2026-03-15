@@ -210,6 +210,7 @@ export default function WebhooksPanel() {
   const [health, setHealth] = useState(null);
   const [webhooks, setWebhooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [, forceUpdate] = useState(0);
 
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -246,6 +247,14 @@ export default function WebhooksPanel() {
     // cleanup
     return () => clearInterval(interval);
   }, [loadAll]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      forceUpdate(v => v + 1);
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
