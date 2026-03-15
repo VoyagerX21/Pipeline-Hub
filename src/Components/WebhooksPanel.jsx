@@ -340,19 +340,21 @@ export default function WebhooksPanel() {
         </div>
 
         {/* Webhooks */}
-        <div style={{ marginTop: 28 }}>
-          <div style={{
-            fontSize: 11,
-            color: "#475569",
-            marginBottom: 12
-          }}>
-            Webhooks
-          </div>
+        {webhooks ?
+          <div style={{ marginTop: 28 }}>
+            <div style={{
+              fontSize: 11,
+              color: "#475569",
+              marginBottom: 12
+            }}>
+              Webhooks
+            </div>
 
-          {webhooks.map(w => (
-            <WebhookCard key={w.id} wh={w} />
-          ))}
-        </div>
+            {webhooks.map(w => (
+              <WebhookCard key={w.id} wh={w} />
+            ))}
+          </div>
+          : null}
       </div>
     </>
   );
