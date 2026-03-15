@@ -155,7 +155,7 @@ function DashboardLayout() {
   }, [user]);
 
   return (
-    <div style={{ display: "flex", height: "100%", background: "#080b10", color: "#94a3b8" }}>
+    <div style={{ display: "flex", minHeight: "100vh", background: "#080b10", color: "#94a3b8" }}>
       <Sidebar sidePanel={sidePanel} setSidePanel={setSidePanel} />
 
       {sidePanel === "profile" && (
