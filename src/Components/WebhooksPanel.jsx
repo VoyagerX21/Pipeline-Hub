@@ -11,7 +11,10 @@ const API = {
 };
 
 async function apiFetch(url) {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}${url}`);
+  const res = await fetch(`${import.meta.env.VITE_API_URL}${url}`, {
+    method: "GET",
+    credentials: 'include'
+  });
   if (!res.ok) throw new Error();
   return res.json();
 }
