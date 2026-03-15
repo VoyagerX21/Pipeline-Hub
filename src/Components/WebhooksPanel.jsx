@@ -340,7 +340,7 @@ export default function WebhooksPanel() {
         </div>
 
         {/* Webhooks */}
-        {webhooks ?
+        {(webhooks.length > 0) ?
           <div style={{ marginTop: 28 }}>
             <div style={{
               fontSize: 11,
