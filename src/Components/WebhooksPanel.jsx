@@ -123,7 +123,7 @@ function MiniBarChart({ data, loading }) {
   );
 }
 
-function FeedItem({ item }) {
+function FeedItem({ item, now }) {
   const success = item.status === "success";
 
   return (
@@ -155,7 +155,7 @@ function FeedItem({ item }) {
           color: "#334155",
           fontFamily: "monospace"
         }}>
-          {timeAgo(new Date(item.time))}
+          {timeAgo(new Date(item.time), now)}
         </div>
       </div>
     </div>
@@ -210,7 +210,6 @@ export default function WebhooksPanel() {
   const [health, setHealth] = useState(null);
   const [webhooks, setWebhooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [, forceUpdate] = useState(0);
 
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -248,9 +247,11 @@ export default function WebhooksPanel() {
     return () => clearInterval(interval);
   }, [loadAll]);
 
+  const [now, setNow] = useState(Date.now());
+
   useEffect(() => {
     const interval = setInterval(() => {
-      forceUpdate(v => v + 1);
+      setNow(Date.now());
     }, 30000);
 
     return () => clearInterval(interval);
@@ -317,7 +318,7 @@ export default function WebhooksPanel() {
         }}>
           <b>Automation Health</b>
           <div style={{ fontSize: 12, marginTop: 5 }}>
-            Last notification: {health?.lastNotification ? timeAgo(new Date(health.lastNotification)) : "—"}
+            Last notification: {health?.lastNotification ? timeAgo(new Date(health.lastNotification), now) : "—"}
           </div>
         </div>
 
@@ -344,7 +345,7 @@ export default function WebhooksPanel() {
           </div>
 
           {recent.map(r => (
-            <FeedItem key={r.id} item={r} />
+            <FeedItem key={r.id} item={r} now={now} />
           ))}
         </div>
 

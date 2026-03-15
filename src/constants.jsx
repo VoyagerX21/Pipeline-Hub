@@ -42,9 +42,9 @@ export const PLATFORM_ICONS = {
   ),
 };
 
-export function timeAgo(date) {
+export function timeAgo(date, now = Date.now()) {
   const d = new Date(date);
-  const secs = Math.floor((Date.now() - d.getTime()) / 1000);
+  const secs = Math.floor((now - d.getTime()) / 1000);
 
   if (secs < 60) return `${secs}s ago`;
   if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
