@@ -14,7 +14,7 @@ const API = {
   personalSummary: "/webhookPanel/personal-dashboard/summary",
   personalActivity: "/webhookPanel/personal-dashboard/activity",
   personalHealth: "/webhookPanel/personal-dashboard/health",
-  personalRecent: "/webhookPanel/dashboard/recent",
+  personalRecent: "/webhookPanel/personal-dashboard/recent",
   personalWebhooks: "/webhookPanel/webhooks",
 };
 
