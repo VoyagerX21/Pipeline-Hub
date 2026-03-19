@@ -34,8 +34,10 @@ function KeyOverlay({ platform, apiKey, onClose }) {
           border: "1px solid #1e2330",
           borderRadius: 14,
           padding: 28,
-          width: 380,
-          maxWidth: "90vw",
+          width: "90vw",        // 👈 force mobile-friendly width
+          maxWidth: "380px",    // 👈 keep desktop limit
+          marginLeft: "0px",    // 👈 remove side shifts
+          marginRight: "0px",
           boxShadow: "0 25px 60px rgba(0,0,0,0.6)",
         }}
       >
@@ -331,7 +333,7 @@ export default function ProfilePanel({ onClose }) {
         />
       )}
 
-      <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
+      <div style={{ height: "100%", display: "flex", flexDirection: "column", marginLeft: "50px", marginRight: "-50px" }}>
         <div
           style={{
             padding: "20px 20px 0",
