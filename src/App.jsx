@@ -162,7 +162,7 @@ function DashboardLayout() {
         <ProfilePanel onClose={() => setSidePanel(null)} />
       )}
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, marginLeft: "50px" }}>
         <Header filteredCount={events.length} />
 
         <Routes>
