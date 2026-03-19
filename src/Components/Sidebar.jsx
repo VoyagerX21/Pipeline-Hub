@@ -4,23 +4,34 @@ import { UserContext } from "../context/UserContext";
 import Avatar from "./Avatar";
 
 const NAV_ITEMS = [
-  { id: "events",    path: "/events",    icon: "⬡", label: "Events" },
+  { id: "events", path: "/events", icon: "⬡", label: "Events" },
   { id: "analytics", path: "/analytics", icon: "◈", label: "Analytics" },
-  { id: "repos",     path: "/repos",     icon: "⬢", label: "Repos" },
-  { id: "webhooks",  path: "/webhooks",  icon: "⟐", label: "Webhooks" },
+  { id: "repos", path: "/repos", icon: "⬢", label: "Repos" },
+  { id: "webhooks", path: "/webhooks", icon: "⟐", label: "Webhooks" },
 ];
 
 export default function Sidebar({ sidePanel, setSidePanel }) {
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
   const { pathname } = useLocation();
   const { user } = useContext(UserContext);
   // console.log(user);
 
   return (
     <div style={{
-      width: 56, background: "#0a0d12", borderRight: "1px solid #1e2330",
-      display: "flex", flexDirection: "column", alignItems: "center",
-      padding: "16px 0", gap: 4, flexShrink: 0, zIndex: 10,
+      width: 56,
+      height: "100vh",
+      position: "fixed",   // 👈 sticks to screen
+      top: 0,
+      left: 0,
+      background: "#0a0d12",
+      borderRight: "1px solid #1e2330",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      padding: "16px 0",
+      gap: 4,
+      flexShrink: 0,
+      zIndex: 10,
     }}>
       {/* Logo */}
       <div style={{ marginBottom: 16, color: "#3b82f6", fontSize: 22, fontWeight: 900, lineHeight: 1, letterSpacing: -1 }}>
