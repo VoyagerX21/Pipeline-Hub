@@ -37,6 +37,19 @@ export default function Sidebar({ sidePanel, setSidePanel }) {
       <div style={{ marginBottom: 16, color: "#3b82f6", fontSize: 22, fontWeight: 900, lineHeight: 1, letterSpacing: -1 }}>
         V
       </div>
+      <button
+        onClick={() => setSidePanel(sidePanel === "profile" ? null : "profile")}
+        title="Profile"
+        style={{
+          width: 34, height: 34, borderRadius: "50%",
+          background: sidePanel === "profile" ? "#3b82f6" : "#1e2330",
+          border: `2px solid ${sidePanel === "profile" ? "#3b82f6" : "#334155"}`,
+          color: "#e2e8f0", fontWeight: 800, fontSize: 12, cursor: "pointer",
+          fontFamily: "monospace", display: "flex", alignItems: "center", justifyContent: "center",
+        }}
+      >
+        <Avatar avatarURL={user.avatarUrl} />
+      </button>
 
       {/* Nav items */}
       {NAV_ITEMS.map(item => {
@@ -64,21 +77,6 @@ export default function Sidebar({ sidePanel, setSidePanel }) {
       })}
 
       <div style={{ flex: 1 }} />
-
-      {/* Profile button */}
-      <button
-        onClick={() => setSidePanel(sidePanel === "profile" ? null : "profile")}
-        title="Profile"
-        style={{
-          width: 34, height: 34, borderRadius: "50%",
-          background: sidePanel === "profile" ? "#3b82f6" : "#1e2330",
-          border: `2px solid ${sidePanel === "profile" ? "#3b82f6" : "#334155"}`,
-          color: "#e2e8f0", fontWeight: 800, fontSize: 12, cursor: "pointer",
-          fontFamily: "monospace", display: "flex", alignItems: "center", justifyContent: "center",
-        }}
-      >
-        <Avatar avatarURL={user.avatarUrl} />
-      </button>
     </div>
   );
 }
