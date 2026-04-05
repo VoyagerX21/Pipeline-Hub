@@ -77,7 +77,7 @@ function ResizableSplitPane({ left, right }) {
   }, [isDragging]);
 
   return (
-    <div ref={containerRef} style={{ flex: 1, display: "flex", minHeight: 0, overflow: "hidden" }}>
+    <div ref={containerRef} style={{ flex: 1, display: "flex", minHeight: 0, height: "100%", overflow: "hidden" }}>
 
       {/* Left pane */}
       <div style={{ width: `${pct * 100}%`, display: "flex", flexDirection: "column", overflow: "hidden", flexShrink: 0 }}>
@@ -155,44 +155,46 @@ function DashboardLayout() {
   }, [user]);
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#080b10", color: "#94a3b8" }}>
+    <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "#080b10", color: "#94a3b8" }}>
       <Sidebar sidePanel={sidePanel} setSidePanel={setSidePanel} />
 
       {sidePanel === "profile" && (
         <ProfilePanel onClose={() => setSidePanel(null)} />
       )}
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, marginLeft: "50px" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0, overflow: "hidden", marginLeft: "50px" }}>
         <Header filteredCount={events.length} />
 
-        <Routes>
-          <Route path="/" element={<Navigate to="/events" />} />
+        <div style={{ flex: 1, minHeight: 0, display: "flex", overflow: "hidden" }}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/events" />} />
 
-          <Route
-            path="/events"
-            element={
-              <ResizableSplitPane
-                left={
-                  <EventsPanel
-                    events={events}
-                    selectedEvent={selectedEvent}
-                    setSelectedEvent={setSelectedEvent}
-                  />
-                }
-                right={
-                  <EventDetail
-                    event={selectedEvent}
-                    onClose={() => setSelectedEvent(null)}
-                  />
-                }
-              />
-            }
-          />
+            <Route
+              path="/events"
+              element={
+                <ResizableSplitPane
+                  left={
+                    <EventsPanel
+                      events={events}
+                      selectedEvent={selectedEvent}
+                      setSelectedEvent={setSelectedEvent}
+                    />
+                  }
+                  right={
+                    <EventDetail
+                      event={selectedEvent}
+                      onClose={() => setSelectedEvent(null)}
+                    />
+                  }
+                />
+              }
+            />
 
-          <Route path="/analytics" element={<AnalyticsPanel />} />
-          <Route path="/repos"     element={<ReposPanel />} />
-          <Route path="/webhooks"  element={<WebhooksPanel />} />
-        </Routes>
+            <Route path="/analytics" element={<AnalyticsPanel />} />
+            <Route path="/repos"     element={<ReposPanel />} />
+            <Route path="/webhooks"  element={<WebhooksPanel />} />
+          </Routes>
+        </div>
       </div>
     </div>
   );

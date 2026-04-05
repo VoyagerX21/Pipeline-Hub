@@ -367,7 +367,7 @@ export default function ProfilePanel({ onClose }) {
           </button>
         </div>
 
-        <div style={{ padding: 20, flex: 1, overflowY: "auto" }}>
+        <div style={{ padding: 20, flex: 1, overflow: "hidden" }}>
           {/* User card */}
           <div
             style={{

@@ -30,7 +30,7 @@ export default function EventDetail({ event, onClose }) {
   const timestamp = new Date(event.eventTimestamp);
 
   return (
-    <div style={{ padding: 24, height: "100%", overflowY: "auto" }}>
+    <div style={{ padding: 24, height: "100%", overflowY: "hidden" }}>
 
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 24 }}>
@@ -175,7 +175,7 @@ export default function EventDetail({ event, onClose }) {
           <div
             style={{
               maxHeight: 200,
-              overflowY: "auto",
+              overflow: "hidden",
               borderTop: "1px solid #1e2330",
               padding: "10px 14px"
             }}
