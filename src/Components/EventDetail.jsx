@@ -124,7 +124,7 @@ export default function EventDetail({ event, onClose }) {
           borderRadius: 8,
           border: "1px solid #1e2330",
           background: "#0a0d12",
-          overflow: "hidden"
+          overflowY: "auto"
         }}
       >
         {/* Clickable header row */}
