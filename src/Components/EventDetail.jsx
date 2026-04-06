@@ -174,7 +174,7 @@ export default function EventDetail({ event, onClose }) {
         {isPayloadExpanded && (
           <div
             style={{
-              maxHeight: 400,
+              maxHeight: 200,
               overflow: "auto",
               borderTop: "1px solid #1e2330",
               padding: "10px 14px"
