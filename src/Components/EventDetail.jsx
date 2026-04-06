@@ -124,7 +124,7 @@ export default function EventDetail({ event, onClose }) {
           borderRadius: 8,
           border: "1px solid #1e2330",
           background: "#0a0d12",
-          overflowY: "auto"
+          overflow: "hidden"
         }}
       >
         {/* Clickable header row */}
@@ -174,8 +174,8 @@ export default function EventDetail({ event, onClose }) {
         {isPayloadExpanded && (
           <div
             style={{
-              maxHeight: 200,
-              overflow: "hidden",
+              maxHeight: 400,
+              overflow: "auto",
               borderTop: "1px solid #1e2330",
               padding: "10px 14px"
             }}
