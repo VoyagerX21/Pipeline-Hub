@@ -10,6 +10,7 @@ import AnalyticsPanel from "./Components/AnalyticsPanel";
 import ReposPanel from "./Components/ReposPanel";
 import WebhooksPanel from "./Components/WebhooksPanel";
 import Login from "./Components/Login";
+import ResetPassword from "./Components/ResetPassword";
 import { UserContext } from "./context/UserContext";
 
 /* ─── Constants ──────────────────────────────────────────────── */
@@ -224,6 +225,7 @@ export default function App() {
     <UserContext.Provider value={{ user, setUser }}>
       <BrowserRouter>
         <Routes>
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route
             path="/login"
             element={user ? <Navigate to="/events" /> : <Login onLogin={setUser} />}

@@ -16,6 +16,19 @@ export default function Sidebar({ sidePanel, setSidePanel }) {
   const { user } = useContext(UserContext);
   // console.log(user);
 
+  const handleLogout = async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      // ignore network errors and proceed to redirect
+      console.error("Logout failed", err);
+    }
+    navigate("/login", { replace: true });
+  };
+
   return (
     <div style={{
       width: 56,
@@ -52,6 +65,7 @@ export default function Sidebar({ sidePanel, setSidePanel }) {
       </button>
 
       {/* Nav items */}
+      <br />
       {NAV_ITEMS.map(item => {
         const active = pathname.startsWith(item.path);
         return (
@@ -77,6 +91,29 @@ export default function Sidebar({ sidePanel, setSidePanel }) {
       })}
 
       <div style={{ flex: 1 }} />
+
+      {/* Logout (icon only) */}
+      <button
+        onClick={handleLogout}
+        title="Logout"
+        style={{
+          width: 30,
+          height: 30,
+          borderRadius: 8,
+          border: "none",
+          backgroundColor: "#d84242",
+          color: "white",
+          cursor: "pointer",
+          fontSize: 18,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.15s",
+          marginBottom: 6,
+        }}
+      >
+        ⎋
+      </button>
     </div>
   );
 }

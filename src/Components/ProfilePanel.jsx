@@ -165,6 +165,13 @@ export default function ProfilePanel({ onClose }) {
   const [token, setToken] = useState(providers.slackURL || "");
   const [saveError, setSaveError] = useState(null);
   const [keyOverlay, setKeyOverlay] = useState(null); // { platform, key }
+  // Password upgrade state
+  const [currentPwd, setCurrentPwd] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmNewPwd, setConfirmNewPwd] = useState("");
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [pwdError, setPwdError] = useState(null);
+  const [pwdSaved, setPwdSaved] = useState(false);
 
   const handleSave = async () => {
     setSaveError(null);
@@ -209,6 +216,46 @@ export default function ProfilePanel({ onClose }) {
 
   const handleShowKey = (name, key) => {
     setKeyOverlay({ platform: name, key });
+  };
+
+  const handleChangePassword = async () => {
+    setPwdError(null);
+    if (!currentPwd || !newPwd || !confirmNewPwd) {
+      setPwdError("All fields are required.");
+      return;
+    }
+    if (newPwd !== confirmNewPwd) {
+      setPwdError("Passwords do not match.");
+      return;
+    }
+    if (newPwd.length < 8 || !/[A-Z]/.test(newPwd) || !/[a-z]/.test(newPwd) || !/\d/.test(newPwd)) {
+      setPwdError("Password must be ≥8 chars and include upper, lower and a number.");
+      return;
+    }
+
+    setPwdLoading(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/changePassword/${user._id}`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword: currentPwd, newPassword: newPwd }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.success === false) {
+        setPwdError(data.message || data.msg || "Failed to update password.");
+        return;
+      }
+      setPwdSaved(true);
+      setCurrentPwd("");
+      setNewPwd("");
+      setConfirmNewPwd("");
+      setTimeout(() => setPwdSaved(false), 2200);
+    } catch (err) {
+      setPwdError("Network error. Please try again.");
+    } finally {
+      setPwdLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -333,13 +380,18 @@ export default function ProfilePanel({ onClose }) {
         />
       )}
 
-      <div style={{ height: "100%", display: "flex", flexDirection: "column", marginLeft: "50px", marginRight: "-50px" }}>
+      <div style={{ height: "100vh", display: "flex", flexDirection: "column", marginLeft: "50px", marginRight: "-50px" }}>
         <div
           style={{
             padding: "20px 20px 0",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            position: "sticky",
+            top: 0,
+            zIndex: 6,
+            background: "linear-gradient(180deg, rgba(10,13,18,0.98), rgba(10,13,18,0.9))",
+            backdropFilter: "blur(6px)",
           }}
         >
           <div
@@ -367,7 +419,7 @@ export default function ProfilePanel({ onClose }) {
           </button>
         </div>
 
-        <div style={{ padding: 20, flex: 1, overflow: "hidden" }}>
+        <div style={{ padding: 20, flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
           {/* User card */}
           <div
             style={{
@@ -493,6 +545,108 @@ export default function ProfilePanel({ onClose }) {
             <div style={{ fontSize: 11, color: "#334155", marginTop: 6 }}>
               Notifications will be sent to your configured Slack channel only.
             </div>
+          </div>
+
+          {/* Password upgrade */}
+          <div style={{ marginBottom: 20, marginTop: 8 }}>
+            <div
+              style={{
+                fontSize: 11,
+                color: "#64748b",
+                textTransform: "uppercase",
+                letterSpacing: "1px",
+                fontWeight: 700,
+                marginBottom: 12,
+              }}
+            >
+              Password Upgrade
+            </div>
+
+            <label style={{ fontSize: 12, color: "#475569", display: "block", marginBottom: 6 }}>
+              Current password
+            </label>
+            <input
+              type="password"
+              value={currentPwd}
+              onChange={(e) => setCurrentPwd(e.target.value)}
+              placeholder="Current password"
+              style={{ ...inputStyle, marginBottom: 10 }}
+            />
+
+            <label style={{ fontSize: 12, color: "#475569", display: "block", marginBottom: 6 }}>
+              New password
+            </label>
+            <input
+              type="password"
+              value={newPwd}
+              onChange={(e) => setNewPwd(e.target.value)}
+              placeholder="New password (min 8 chars)"
+              style={{ ...inputStyle, marginBottom: 10 }}
+            />
+
+            <label style={{ fontSize: 12, color: "#475569", display: "block", marginBottom: 6 }}>
+              Confirm new password
+            </label>
+            <input
+              type="password"
+              value={confirmNewPwd}
+              onChange={(e) => setConfirmNewPwd(e.target.value)}
+              placeholder="Repeat new password"
+              style={{ ...inputStyle, marginBottom: 10 }}
+            />
+
+            {pwdError && (
+              <div style={{
+                background: "#1a0a0a",
+                border: "1px solid #7f1d1d",
+                borderRadius: 8,
+                padding: "9px 12px",
+                marginBottom: 12,
+                fontSize: 12,
+                color: "#f87171",
+                display: "flex",
+                gap: 6,
+                alignItems: "flex-start",
+              }}>
+                <span style={{ flexShrink: 0 }}>⚠</span>
+                <span>{pwdError}</span>
+              </div>
+            )}
+
+            {pwdSaved && (
+              <div style={{
+                background: "#052e16",
+                border: "1px solid #064e3b",
+                borderRadius: 8,
+                padding: "9px 12px",
+                marginBottom: 12,
+                fontSize: 12,
+                color: "#86efac",
+                display: "flex",
+                gap: 6,
+                alignItems: "center",
+              }}>
+                ✓ Password updated
+              </div>
+            )}
+
+            <button
+              onClick={handleChangePassword}
+              disabled={pwdLoading}
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: 8,
+                background: pwdSaved ? "#10b98122" : "#2563eb",
+                border: pwdSaved ? "1px solid #10b981" : "none",
+                color: pwdSaved ? "#10b981" : "#fff",
+                fontWeight: 700,
+                fontSize: 13,
+                cursor: pwdLoading ? "not-allowed" : "pointer",
+              }}
+            >
+              {pwdLoading ? "Updating…" : pwdSaved ? "✓ Updated" : "Change password"}
+            </button>
           </div>
           {saveError && (
             <div

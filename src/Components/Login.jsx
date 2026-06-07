@@ -3,12 +3,17 @@ import { PLATFORM_ICONS } from "../constants";
 
 export default function Login({ onLogin }) {
     const [mode, setMode] = useState("login");
-    const [form, setForm] = useState({ username: "", password: "", name: "" });
+    const [form, setForm] = useState({ email: "", password: "", name: "" });
     const [showPass, setShowPass] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [mounted, setMounted] = useState(false);
     const [feedback, setFeedback] = useState("");
+    const [feedbackType, setFeedbackType] = useState(null); // 'error' | 'success' | 'info'
+    const [showForgot, setShowForgot] = useState(false);
+    const [forgotEmail, setForgotEmail] = useState("");
+    const [forgotLoading, setForgotLoading] = useState(false);
+    const [forgotError, setForgotError] = useState("");
 
     useEffect(() => {
         const t = setTimeout(() => setMounted(true), 50);
@@ -39,7 +44,7 @@ export default function Login({ onLogin }) {
     };
 
     const handleSubmit = async () => {
-        if (!form.username || !form.password) { setError("All fields are required."); return; }
+        if (!form.email || !form.password) { setError("All fields are required."); return; }
         if (mode === "register" && !form.name) { setError("Name is required."); return; }
 
         setLoading(true);
@@ -57,17 +62,46 @@ export default function Login({ onLogin }) {
         const data = await res.json();
         if (!data.success) {
             setLoading(false);
-            setForm({ username: "", password: "", name: "" });
+            setForm({ email: "", password: "", name: "" });
             setTimeout(() => {
+                setFeedbackType('error');
                 setFeedback(data.msg);
-                setTimeout(() => setFeedback(""), 3000);
+                setTimeout(() => { setFeedback(""); setFeedbackType(null); }, 3000);
             }, 500);
             return;
         }
         setLoading(false);
 
         // Call parent with user data
-        onLogin?.({ name: form.name || form.username, username: form.username });
+        onLogin?.({ name: form.name || form.email, email: form.email });
+    };
+
+    const handleForgotSubmit = async () => {
+        if (!forgotEmail) { setForgotError("Email is required."); return; }
+        setForgotLoading(true);
+        setForgotError("");
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/forgot`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: forgotEmail }),
+            });
+            const data = await res.json();
+            if (!data.success) {
+                setForgotError(data.msg || "Request failed.");
+            } else {
+                setFeedbackType('success');
+                setFeedback(data.msg || "If this email exists, we've sent reset instructions.");
+                setShowForgot(false);
+                setForgotEmail("");
+                setTimeout(() => { setFeedback(""); setFeedbackType(null); }, 4000);
+            }
+        } catch (err) {
+            setForgotError("Request failed.");
+        } finally {
+            setForgotLoading(false);
+            setTimeout(() => setForgotError(""), 4000);
+        }
     };
 
     const handleOAuth = (platform) => {
@@ -158,8 +192,32 @@ export default function Login({ onLogin }) {
         }
         .toggle-mode:hover { color: #60a5fa !important; }
         .submit-btn:hover:not(:disabled) { background: #2563eb !important; }
-        .submit-btn:active:not(:disabled) { transform: scale(0.98); }
-      `}</style>
+                .submit-btn:active:not(:disabled) { transform: scale(0.98); }
+
+                /* Forgot-password modal */
+                .modal-backdrop {
+                    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 60;
+                    background: linear-gradient(rgba(2,6,23,0.55), rgba(2,6,23,0.55));
+                    backdrop-filter: blur(4px);
+                    padding: 24px;
+                }
+                .modal-panel {
+                    width: 100%; max-width: 520px; background: linear-gradient(180deg, #071018, #0b1116);
+                    border: 1px solid rgba(255,255,255,0.03);
+                    border-radius: 14px; padding: 22px; box-shadow: 0 20px 50px rgba(2,6,23,0.75);
+                    transform: translateY(8px) scale(0.995); opacity: 0; animation: fadeUp 260ms cubic-bezier(.2,.9,.2,1) forwards;
+                }
+                .modal-title { font-size: 17px; font-weight: 800; color: #e6eef8; margin-bottom: 6px; }
+                .modal-desc { font-size: 13px; color: #94a3b8; margin-bottom: 14px; line-height: 1.35; }
+                .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+                .modal-panel input { background: #081018; border: 1px solid #16202a; border-radius: 8px; padding: 10px 12px; color: #e6eef8; font-family: 'JetBrains Mono', monospace; }
+                .modal-panel input::placeholder { color: #334155; }
+                .modal-actions button { min-width: 120px; padding: 9px 12px; border-radius: 8px; font-weight: 700; }
+                .modal-actions button:first-child { background: transparent; border: 1px solid #1e2330; color: #94a3b8; }
+                .modal-actions button:last-child { background: #2563eb; border: none; color: #fff; }
+                .modal-actions button:last-child:hover { background: #1f56d6; }
+                @media (max-width: 480px) { .modal-panel { padding: 16px; max-width: 420px; } .modal-actions { flex-direction: column-reverse; gap: 8px; } }
+            `}</style>
 
             {/* ── Background: subtle grid + floating nodes ── */}
             <div style={{
@@ -204,28 +262,28 @@ export default function Login({ onLogin }) {
             }}>
 
                 {/* error card */}
-                {(feedback) ?
+                {feedback ? (
                     <div style={{
                         padding: "10px 14px",
-                        background: "#ef444410",
-                        border: "1px solid #ef444430",
-                        borderLeft: "3px solid #ef4444",
+                        background: feedbackType === 'success' ? "#052e16" : "#ef444410",
+                        border: feedbackType === 'success' ? "1px solid #064e3b" : "1px solid #ef444430",
+                        borderLeft: `3px solid ${feedbackType === 'success' ? '#16a34a' : '#ef4444'}`,
                         borderRadius: 8,
                         display: "flex",
                         alignItems: "flex-start",
                         gap: 10,
                     }}>
-                        <span style={{ color: "#ef4444", fontSize: 15, lineHeight: 1.4 }}>⚠</span>
+                        <span style={{ color: feedbackType === 'success' ? "#86efac" : "#ef4444", fontSize: 15, lineHeight: 1.4 }}>{feedbackType === 'success' ? '✓' : '⚠'}</span>
                         <div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: "#f87171", marginBottom: 2 }}>
-                                Authentication failed
+                            <div style={{ fontSize: 13, fontWeight: 600, color: feedbackType === 'success' ? "#86efac" : "#f87171", marginBottom: 2 }}>
+                                {feedbackType === 'success' ? 'Success' : 'Authentication failed'}
                             </div>
                             <div style={{ fontSize: 12, color: "#94a3b8" }}>
                                 {feedback}
                             </div>
                         </div>
                     </div>
-                    : null}
+                ) : null}
                 {/* Logo + title */}
                 <div style={{ textAlign: "center", marginBottom: 32 }}>
                     <img
@@ -242,6 +300,35 @@ export default function Login({ onLogin }) {
                             : "Start monitoring your repositories"}
                     </div>
                 </div>
+                {/* Forgot password modal */}
+                {showForgot && (
+                    <div className="modal-backdrop" onClick={() => setShowForgot(false)}>
+                        <div className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="forgot-title" onClick={e => e.stopPropagation()}>
+                            <div id="forgot-title" className="modal-title">Reset your password</div>
+                            <div className="modal-desc">Enter the email address for your account and we'll send a reset link.</div>
+                            <input
+                                type="email"
+                                placeholder="john@example.com"
+                                value={forgotEmail}
+                                onChange={e => setForgotEmail(e.target.value)}
+                                onFocus={() => onFocus("forgotEmail")}
+                                onBlur={() => onBlur("forgotEmail")}
+                                style={{ ...inputStyle(focused.forgotEmail), width: "100%", marginBottom: 6 }}
+                            />
+                            {forgotError && (
+                                <div style={{ padding: "8px 10px", borderRadius: 7, background: "#ef444412", border: "1px solid #ef444430", fontSize: 12, color: "#f87171", marginBottom: 6 }}>
+                                    {forgotError}
+                                </div>
+                            )}
+                            <div className="modal-actions">
+                                <button type="button" onClick={() => setShowForgot(false)} style={{ background: "none", border: "1px solid #1e2330", padding: "8px 12px", borderRadius: 8, color: "#94a3b8", cursor: "pointer" }}>Cancel</button>
+                                <button type="button" onClick={handleForgotSubmit} disabled={forgotLoading} style={{ background: "#3b82f6", border: "none", padding: "8px 12px", borderRadius: 8, color: "#fff", fontWeight: 700, cursor: forgotLoading ? "not-allowed" : "pointer" }}>
+                                    {forgotLoading ? "Sending…" : "Send reset link"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* OAuth buttons */}
                 <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
@@ -302,16 +389,16 @@ export default function Login({ onLogin }) {
 
                     <div className="login-field">
                         <label style={{ fontSize: 11, color: "#475569", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.8px", fontWeight: 600 }}>
-                            Username
+                            Email
                         </label>
                         <input
-                            type="text"
-                            placeholder="John Doe"
-                            value={form.username}
-                            onChange={handleChange("username")}
-                            onFocus={() => onFocus("username")}
-                            onBlur={() => onBlur("username")}
-                            style={inputStyle(focused.username)}
+                            type="email"
+                            placeholder="john@example.com"
+                            value={form.email}
+                            onChange={handleChange("email")}
+                            onFocus={() => onFocus("email")}
+                            onBlur={() => onBlur("email")}
+                            style={inputStyle(focused.email)}
                         />
                     </div>
 
@@ -321,7 +408,11 @@ export default function Login({ onLogin }) {
                                 Password
                             </label>
                             {mode === "login" && (
-                                <button style={{ background: "none", border: "none", fontSize: 11, color: "#3b82f6", cursor: "pointer", padding: 0 }}>
+                                <button
+                                    type="button"
+                                    onClick={() => { setShowForgot(true); setForgotError(""); setForgotEmail(form.email || ""); }}
+                                    style={{ background: "none", border: "none", fontSize: 11, color: "#3b82f6", cursor: "pointer", padding: 0 }}
+                                >
                                     Forgot password?
                                 </button>
                             )}
@@ -402,19 +493,30 @@ export default function Login({ onLogin }) {
 
                 {/* Toggle mode */}
                 <div style={{ textAlign: "center", marginTop: 24, fontSize: 12, color: "#475569" }}>
-                    {mode === "login" ? "Don't have an account? " : "Already have an account? "}
-                    <button
-                        className="toggle-mode"
-                        onClick={() => { setMode(m => m === "login" ? "register" : "login"); setError(""); setForm({ username: "", password: "", name: "" }); }}
-                        style={{
-                            background: "none", border: "none",
-                            color: "#3b82f6", cursor: "pointer",
-                            fontSize: 12, fontWeight: 600, padding: 0,
-                            transition: "color 0.15s",
-                        }}
-                    >
-                        {mode === "login" ? "Create one" : "Sign in"}
-                    </button>
+                    {mode === "login" ? (
+                        <>
+                            {"No account? "}
+                            <span style={{ color: "#3b82f6", fontWeight: 600 }}>
+                                $ create-account --provider oauth ↑
+                            </span>
+                        </>
+                    ) : (
+                        <>
+                            {"Already initialized? "}
+                            <button
+                                className="toggle-mode"
+                                onClick={() => { setMode("login"); setError(""); setForm({ email: "", password: "", name: "" }); }}
+                                style={{
+                                    background: "none", border: "none",
+                                    color: "#3b82f6", cursor: "pointer",
+                                    fontSize: 12, fontWeight: 600, padding: 0,
+                                    transition: "color 0.15s",
+                                }}
+                            >
+                                Sign in →
+                            </button>
+                        </>
+                    )}
                 </div>
 
                 {/* Footer note */}
