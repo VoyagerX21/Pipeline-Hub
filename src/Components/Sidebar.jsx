@@ -14,7 +14,7 @@ export default function Sidebar({ sidePanel, setSidePanel }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { user } = useContext(UserContext);
-  // console.log(user);
+  console.log(user);
 
   const handleLogout = async () => {
     try {

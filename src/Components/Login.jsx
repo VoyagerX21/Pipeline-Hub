@@ -73,7 +73,7 @@ export default function Login({ onLogin }) {
         setLoading(false);
 
         // Call parent with user data
-        onLogin?.({ name: form.name || form.email, email: form.email });
+        onLogin?.(data.user);
     };
 
     const handleForgotSubmit = async () => {
