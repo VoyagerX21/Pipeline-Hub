@@ -594,13 +594,28 @@ export default function WebhooksPanel() {
           0%,100%{opacity:1}
           50%{opacity:.4}
         }
+
+        .webhooks-panel-root {
+          padding: 24px;
+          font-family: 'DM Mono', monospace;
+        }
+
+        .webhooks-sections-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 16px;
+          align-items: start;
+        }
+
+        @media (min-width: 1100px) {
+          .webhooks-sections-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
       `}</style>
 
       <div
-        style={{
-          padding: 24,
-          fontFamily: "'DM Mono', monospace",
-        }}
+        className="webhooks-panel-root"
       >
         {/* Header */}
         <div style={{ marginBottom: 24 }}>
@@ -638,27 +653,29 @@ export default function WebhooksPanel() {
           </div>
         </div>
 
-        {/* Personal Dashboard Section */}
-        <Section
-          title="Personal Dashboard"
-          subtitle="Your individual notifications, activity & webhooks"
-          open={personalOpen}
-          onToggle={() => setPersonalOpen((v) => !v)}
-          accent="#3b82f6"
-        >
-          <PersonalDashboard />
-        </Section>
+        <div className="webhooks-sections-grid">
+          {/* Personal Dashboard Section */}
+          <Section
+            title="Personal Dashboard"
+            subtitle="Your individual notifications, activity & webhooks"
+            open={personalOpen}
+            onToggle={() => setPersonalOpen((v) => !v)}
+            accent="#3b82f6"
+          >
+            <PersonalDashboard />
+          </Section>
 
-        {/* Global Dashboard Section */}
-        <Section
-          title="Global Dashboard"
-          subtitle="Platform-wide metrics & activity overview"
-          open={globalOpen}
-          onToggle={() => setGlobalOpen((v) => !v)}
-          accent="#8b5cf6"
-        >
-          <GlobalDashboard />
-        </Section>
+          {/* Global Dashboard Section */}
+          <Section
+            title="Global Dashboard"
+            subtitle="Platform-wide metrics & activity overview"
+            open={globalOpen}
+            onToggle={() => setGlobalOpen((v) => !v)}
+            accent="#8b5cf6"
+          >
+            <GlobalDashboard />
+          </Section>
+        </div>
       </div>
     </>
   );
