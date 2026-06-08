@@ -10,11 +10,10 @@ const NAV_ITEMS = [
   { id: "webhooks", path: "/webhooks", icon: "⟐", label: "Webhooks" },
 ];
 
-export default function Sidebar({ sidePanel, setSidePanel }) {
+export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { user } = useContext(UserContext);
-  console.log(user);
 
   const handleLogout = async () => {
     try {
@@ -26,6 +25,7 @@ export default function Sidebar({ sidePanel, setSidePanel }) {
       // ignore network errors and proceed to redirect
       console.error("Logout failed", err);
     }
+    changeUser(null);
     navigate("/login", { replace: true });
   };
 

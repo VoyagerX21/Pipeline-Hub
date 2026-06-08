@@ -133,7 +133,7 @@ function ResizableSplitPane({ left, right }) {
 }
 
 /* ─── Dashboard Layout ───────────────────────────────────────── */
-function DashboardLayout() {
+function DashboardLayout({ changeUser }) {
   const [sidePanel, setSidePanel]       = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [events, setEvents]             = useState([]);
@@ -157,7 +157,7 @@ function DashboardLayout() {
 
   return (
     <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "#080b10", color: "#94a3b8" }}>
-      <Sidebar sidePanel={sidePanel} setSidePanel={setSidePanel} />
+      <Sidebar sidePanel={sidePanel} setSidePanel={setSidePanel} changeUser={changeUser} />
 
       {sidePanel === "profile" && (
         <ProfilePanel onClose={() => setSidePanel(null)} />
@@ -232,7 +232,7 @@ export default function App() {
           />
           <Route
             path="/*"
-            element={user ? <DashboardLayout /> : <Navigate to="/login" />}
+            element={user ? <DashboardLayout changeUser={setUser} /> : <Navigate to="/login" />}
           />
         </Routes>
       </BrowserRouter>

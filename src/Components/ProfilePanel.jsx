@@ -159,14 +159,13 @@ function KeyOverlay({ platform, apiKey, onClose }) {
 export default function ProfilePanel({ onClose }) {
   const [saved, setSaved] = useState(false);
   const { user } = useContext(UserContext);
+  const hasPassword = Boolean(user?.password);
 
   const [providers, setProviders] = useState({});
   const [channel, setChannel] = useState(providers.slackChannel || "");
   const [token, setToken] = useState(providers.slackURL || "");
   const [saveError, setSaveError] = useState(null);
   const [keyOverlay, setKeyOverlay] = useState(null); // { platform, key }
-  // Password upgrade state
-  const [currentPwd, setCurrentPwd] = useState("");
   const [newPwd, setNewPwd] = useState("");
   const [confirmNewPwd, setConfirmNewPwd] = useState("");
   const [pwdLoading, setPwdLoading] = useState(false);
@@ -220,7 +219,7 @@ export default function ProfilePanel({ onClose }) {
 
   const handleChangePassword = async () => {
     setPwdError(null);
-    if (!currentPwd || !newPwd || !confirmNewPwd) {
+    if (!newPwd || !confirmNewPwd) {
       setPwdError("All fields are required.");
       return;
     }
@@ -235,11 +234,11 @@ export default function ProfilePanel({ onClose }) {
 
     setPwdLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/changePassword/${user._id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/updatePass/${user._id}`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword: currentPwd, newPassword: newPwd }),
+        body: JSON.stringify({ newPassword: newPwd }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || data.success === false) {
@@ -247,7 +246,6 @@ export default function ProfilePanel({ onClose }) {
         return;
       }
       setPwdSaved(true);
-      setCurrentPwd("");
       setNewPwd("");
       setConfirmNewPwd("");
       setTimeout(() => setPwdSaved(false), 2200);
@@ -559,19 +557,8 @@ export default function ProfilePanel({ onClose }) {
                 marginBottom: 12,
               }}
             >
-              Password Upgrade
+              {hasPassword ? "Change password" : "Set password"}
             </div>
-
-            <label style={{ fontSize: 12, color: "#475569", display: "block", marginBottom: 6 }}>
-              Current password
-            </label>
-            <input
-              type="password"
-              value={currentPwd}
-              onChange={(e) => setCurrentPwd(e.target.value)}
-              placeholder="Current password"
-              style={{ ...inputStyle, marginBottom: 10 }}
-            />
 
             <label style={{ fontSize: 12, color: "#475569", display: "block", marginBottom: 6 }}>
               New password
@@ -626,7 +613,7 @@ export default function ProfilePanel({ onClose }) {
                 gap: 6,
                 alignItems: "center",
               }}>
-                ✓ Password updated
+                ✓ Password {hasPassword ? "updated" : "set"}
               </div>
             )}
 
@@ -645,7 +632,7 @@ export default function ProfilePanel({ onClose }) {
                 cursor: pwdLoading ? "not-allowed" : "pointer",
               }}
             >
-              {pwdLoading ? "Updating…" : pwdSaved ? "✓ Updated" : "Change password"}
+              {pwdLoading ? (hasPassword ? "Updating…" : "Saving…") : pwdSaved ? "✓ Updated" : hasPassword ? "Change password" : "Set password"}
             </button>
           </div>
           {saveError && (
