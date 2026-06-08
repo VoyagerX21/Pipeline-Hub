@@ -57,6 +57,7 @@ export default function Login({ onLogin }) {
             headers: {
                 "Content-Type": "application/json"
             },
+            credentials: 'include',
             body: JSON.stringify(form)
         });
         const data = await res.json();
