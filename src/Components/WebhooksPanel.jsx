@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import Badge from "./Badge.jsx";
 import { EVENT_COLORS, timeAgo } from "../constants.jsx";
 
+const MOBILE_BREAKPOINT = 1100;
+
 const API = {
   // Global dashboard
   summary: "/webhookPanel/dashboard/summary",
@@ -233,7 +235,15 @@ function WebhookCard({ wh }) {
 
 /* ─── Section wrapper ─────────────────────────────────────────────────── */
 
-function Section({ title, subtitle, open, onToggle, accent = "#3b82f6", children }) {
+function Section({
+  title,
+  subtitle,
+  open,
+  onToggle,
+  accent = "#3b82f6",
+  collapsible = true,
+  children,
+}) {
   return (
     <div
       style={{
@@ -245,74 +255,129 @@ function Section({ title, subtitle, open, onToggle, accent = "#3b82f6", children
       }}
     >
       {/* Section header */}
-      <button
-        onClick={onToggle}
-        style={{
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          padding: "14px 18px",
-          background: "transparent",
-          border: "none",
-          borderBottom: open ? "1px solid #1e2330" : "none",
-          cursor: "pointer",
-          textAlign: "left",
-        }}
-      >
-        {/* +/– icon */}
-        <div
+      {collapsible ? (
+        <button
+          onClick={onToggle}
+          type="button"
           style={{
-            width: 20,
-            height: 20,
-            borderRadius: 5,
-            border: `1px solid ${accent}44`,
-            background: `${accent}11`,
+            width: "100%",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            transition: "background 0.2s",
+            gap: 10,
+            padding: "14px 18px",
+            background: "transparent",
+            border: "none",
+            borderBottom: open ? "1px solid #1e2330" : "none",
+            cursor: "pointer",
+            textAlign: "left",
           }}
         >
-          <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {open ? (
-              /* minus */
-              <line x1="1" y1="5" x2="9" y2="5" stroke={accent} strokeWidth="1.5" strokeLinecap="round" />
-            ) : (
-              /* plus */
-              <>
-                <line x1="5" y1="1" x2="5" y2="9" stroke={accent} strokeWidth="1.5" strokeLinecap="round" />
-                <line x1="1" y1="5" x2="9" y2="5" stroke={accent} strokeWidth="1.5" strokeLinecap="round" />
-              </>
-            )}
-          </svg>
-        </div>
-
-        <div>
           <div
             style={{
-              fontSize: 13,
-              fontWeight: 800,
-              color: "#e2e8f0",
-              letterSpacing: "0.3px",
+              width: 20,
+              height: 20,
+              borderRadius: 5,
+              border: `1px solid ${accent}44`,
+              background: `${accent}11`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              transition: "background 0.2s",
             }}
           >
-            {title}
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {open ? (
+                <line
+                  x1="1"
+                  y1="5"
+                  x2="9"
+                  y2="5"
+                  stroke={accent}
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              ) : (
+                <>
+                  <line
+                    x1="5"
+                    y1="1"
+                    x2="5"
+                    y2="9"
+                    stroke={accent}
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                  <line
+                    x1="1"
+                    y1="5"
+                    x2="9"
+                    y2="5"
+                    stroke={accent}
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                </>
+              )}
+            </svg>
           </div>
-          {subtitle && (
-            <div style={{ fontSize: 10, color: "#475569", marginTop: 1 }}>
-              {subtitle}
+
+          <div>
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: 800,
+                color: "#e2e8f0",
+                letterSpacing: "0.3px",
+              }}
+            >
+              {title}
             </div>
-          )}
+            {subtitle && (
+              <div style={{ fontSize: 10, color: "#475569", marginTop: 1 }}>
+                {subtitle}
+              </div>
+            )}
+          </div>
+        </button>
+      ) : (
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            padding: "14px 18px",
+            background: "transparent",
+            borderBottom: open ? "1px solid #1e2330" : "none",
+            textAlign: "left",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontSize: 13,
+                fontWeight: 800,
+                color: "#e2e8f0",
+                letterSpacing: "0.3px",
+              }}
+            >
+              {title}
+            </div>
+            {subtitle && (
+              <div style={{ fontSize: 10, color: "#475569", marginTop: 1 }}>
+                {subtitle}
+              </div>
+            )}
+          </div>
         </div>
-      </button>
+      )}
 
       {/* Section body */}
       {open && (
@@ -580,8 +645,37 @@ function PersonalDashboard() {
 /* ─── Root component ──────────────────────────────────────────────────── */
 
 export default function WebhooksPanel() {
-  const [personalOpen, setPersonalOpen] = useState(false);
-  const [globalOpen, setGlobalOpen] = useState(false);
+  const [personalOpen, setPersonalOpen] = useState(
+    () => window.innerWidth >= MOBILE_BREAKPOINT,
+  );
+  const [globalOpen, setGlobalOpen] = useState(
+    () => window.innerWidth >= MOBILE_BREAKPOINT,
+  );
+  const [isMobile, setIsMobile] = useState(() =>
+    window.innerWidth < MOBILE_BREAKPOINT,
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile) {
+      setPersonalOpen(false);
+      setGlobalOpen(false);
+      return;
+    }
+
+    setPersonalOpen(true);
+    setGlobalOpen(true);
+  }, [isMobile]);
 
   return (
     <>
@@ -660,6 +754,7 @@ export default function WebhooksPanel() {
             subtitle="Your individual notifications, activity & webhooks"
             open={personalOpen}
             onToggle={() => setPersonalOpen((v) => !v)}
+            collapsible={isMobile}
             accent="#3b82f6"
           >
             <PersonalDashboard />
@@ -671,6 +766,7 @@ export default function WebhooksPanel() {
             subtitle="Platform-wide metrics & activity overview"
             open={globalOpen}
             onToggle={() => setGlobalOpen((v) => !v)}
+            collapsible={isMobile}
             accent="#8b5cf6"
           >
             <GlobalDashboard />
