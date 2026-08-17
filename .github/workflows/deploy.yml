@@ -50,6 +50,7 @@ jobs:
             docker compose pull frontend
             docker compose up -d frontend
 
+            sleep 3
             curl --fail http://127.0.0.1:3001
 
             echo "PipelineHub frontend deployed successfully."
