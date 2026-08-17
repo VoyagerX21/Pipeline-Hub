@@ -142,7 +142,7 @@ function DashboardLayout({ changeUser }) {
 
   const fetchEvents = async () => {
     try {
-      const res  = await fetch(`${import.meta.env.VITE_API_URL}/events/list/${user._id}`, { credentials: "include" });
+      const res  = await fetch(`${window.__ENV__.VITE_API_URL}/events/list/${user._id}`, { credentials: "include" });
       const data = await res.json();
       if (data.success) setEvents(data.events);
       else console.error("Failed to fetch events");
@@ -209,7 +209,7 @@ export default function App() {
   useEffect(() => {
     (async () => {
       try {
-        const res  = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, { credentials: "include" });
+        const res  = await fetch(`${window.__ENV__.VITE_API_URL}/auth/me`, { credentials: "include" });
         const data = await res.json();
         if (data.success) setUser(data.user);
       } catch (err) {

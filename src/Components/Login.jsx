@@ -23,7 +23,7 @@ export default function Login({ onLogin }) {
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+                const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/me`, {
                     credentials: "include"
                 });
                 const data = await res.json();
@@ -50,7 +50,7 @@ export default function Login({ onLogin }) {
         setLoading(true);
         setError("");
         // Simulate async auth — replace with your actual API call
-        const url = `${import.meta.env.VITE_API_URL}/auth${(mode === "register") ? "/register" : "/login"}`;
+        const url = `${window.__ENV__.VITE_API_URL}/auth${(mode === "register") ? "/register" : "/login"}`;
         // console.log(url);
         const res = await fetch(url, {
             method: "POST",
@@ -82,7 +82,7 @@ export default function Login({ onLogin }) {
         setForgotLoading(true);
         setForgotError("");
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/forgot`, {
+            const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/forgot`, {
                 method: "POST",
                 credentials: 'include',
                 headers: { "Content-Type": "application/json" },
@@ -107,7 +107,7 @@ export default function Login({ onLogin }) {
     };
 
     const handleOAuth = (platform) => {
-        window.location.href = `${import.meta.env.VITE_API_URL}/auth/${platform}`;
+        window.location.href = `${window.__ENV__.VITE_API_URL}/auth/${platform}`;
     };
 
     const inputStyle = (focused) => ({

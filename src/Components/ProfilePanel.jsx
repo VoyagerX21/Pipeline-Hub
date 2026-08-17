@@ -185,7 +185,7 @@ export default function ProfilePanel({ onClose }) {
     }
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/user/updateConfig/${user._id}`,
+        `${window.__ENV__.VITE_API_URL}/user/updateConfig/${user._id}`,
         {
           method: "POST",
           credentials: "include",
@@ -210,7 +210,7 @@ export default function ProfilePanel({ onClose }) {
   };
 
   const connectPlatform = (provider) => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/${provider}`;
+    window.location.href = `${window.__ENV__.VITE_API_URL}/auth/${provider}`;
   };
 
   const handleShowKey = (name, key) => {
@@ -234,7 +234,7 @@ export default function ProfilePanel({ onClose }) {
 
     setPwdLoading(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/user/updatePass/${user._id}`, {
+      const res = await fetch(`${window.__ENV__.VITE_API_URL}/user/updatePass/${user._id}`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -259,7 +259,7 @@ export default function ProfilePanel({ onClose }) {
   useEffect(() => {
     const fetchProviders = async () => {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/providers/${user._id}`,
+        `${window.__ENV__.VITE_API_URL}/auth/providers/${user._id}`,
         {
           credentials: "include",
         },

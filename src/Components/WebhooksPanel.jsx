@@ -23,7 +23,7 @@ const API = {
 const RECENT_PAGE_SIZE = 5;
 
 async function apiFetch(url) {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}${url}`, {
+  const res = await fetch(`${window.__ENV__.VITE_API_URL}${url}`, {
     method: "GET",
     credentials: "include",
   });

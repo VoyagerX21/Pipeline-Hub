@@ -9,7 +9,7 @@ export default function ReposPanel() {
 
   useEffect(() => {
     const fetchRepos = async () => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/repo/list/${user._id}`, {
+      const res = await fetch(`${window.__ENV__.VITE_API_URL}/repo/list/${user._id}`, {
         credentials: 'include'
       });
       const data = await res.json();

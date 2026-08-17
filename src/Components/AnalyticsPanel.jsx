@@ -173,7 +173,7 @@ export default function AnalyticsPanel() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/analytics/user`, { credentials: "include" });
+        const res = await fetch(`${window.__ENV__.VITE_API_URL}/analytics/user`, { credentials: "include" });
         const data = await res.json();
         setAnalytics(data);
       } finally {

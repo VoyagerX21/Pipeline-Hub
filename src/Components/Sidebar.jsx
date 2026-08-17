@@ -17,7 +17,7 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
+      await fetch(`${window.__ENV__.VITE_API_URL}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });

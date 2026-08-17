@@ -42,7 +42,7 @@ export default function ResetPassword() {
             setInfo("");
 
             try {
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/verify/forgot/${token}`, {
+                const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/verify/forgot/${token}`, {
                     signal: controller.signal,
                 });
                 const data = await res.json().catch(() => ({}));
@@ -112,7 +112,7 @@ export default function ResetPassword() {
         setLoading(true);
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/updatePass`, {
+            const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/updatePass`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

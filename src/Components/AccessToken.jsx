@@ -7,7 +7,7 @@ function OAuthSuccess({ onLogin }) {
   const location = useLocation();
 
   useEffect( async () => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+    const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/me`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
