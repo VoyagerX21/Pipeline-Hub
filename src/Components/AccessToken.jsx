@@ -1,30 +1,33 @@
 import { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function OAuthSuccess({ onLogin }) {
-
+function OAuthSuccess() {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  useEffect( async () => {
-    const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/me`, {
-        method: "GET",
-        headers: {
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/me`, {
+          method: "GET",
+          headers: {
             "Content-Type": "application/json",
-        },
-        credentials: 'include'
-    });
-    const data = await res.json();
-    console.log(data)
-    if (data.success){
-        navigate("/events");
-    }
-    else{
+          },
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.success) {
+          navigate("/events");
+        } else {
+          navigate("/login");
+        }
+      } catch {
         navigate("/login");
+      }
     }
-  }, []);
+    checkAuth();
+  }, [navigate]);
 
-  return <div>Logging you in...</div>;
+  return <div style={{ padding: 24, color: "var(--text-secondary)" }}>Authenticating...</div>;
 }
 
 export default OAuthSuccess;

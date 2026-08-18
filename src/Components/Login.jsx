@@ -1,538 +1,668 @@
 import { useState, useEffect } from "react";
+import { Mail, Lock, User, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, ArrowRight, Sun, Moon } from "lucide-react";
 import { PLATFORM_ICONS } from "../constants";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Login({ onLogin }) {
-    const [mode, setMode] = useState("login");
-    const [form, setForm] = useState({ email: "", password: "", name: "" });
-    const [showPass, setShowPass] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
-    const [mounted, setMounted] = useState(false);
-    const [feedback, setFeedback] = useState("");
-    const [feedbackType, setFeedbackType] = useState(null); // 'error' | 'success' | 'info'
-    const [showForgot, setShowForgot] = useState(false);
-    const [forgotEmail, setForgotEmail] = useState("");
-    const [forgotLoading, setForgotLoading] = useState(false);
-    const [forgotError, setForgotError] = useState("");
+  const [mode, setMode] = useState("login");
+  const [form, setForm] = useState({ email: "", password: "", name: "" });
+  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [feedbackType, setFeedbackType] = useState(null);
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState("");
+  const { theme, toggleTheme } = useTheme();
 
-    useEffect(() => {
-        const t = setTimeout(() => setMounted(true), 50);
-        return () => clearTimeout(t);
-    }, []);
-
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/me`, {
-                    credentials: "include"
-                });
-                const data = await res.json();
-                if (data.authenticated) {
-                    // console.log(data.user);
-                    onLogin(data.user);
-                }
-            } catch (err) {
-                console.error("Auth check failed");
-            }
-        };
-        checkAuth();
-    }, []);
-
-    const handleChange = (field) => (e) => {
-        setForm((f) => ({ ...f, [field]: e.target.value }));
-        if (error) setError("");
-    };
-
-    const handleSubmit = async () => {
-        if (!form.email || !form.password) { setError("All fields are required."); return; }
-        if (mode === "register" && !form.name) { setError("Name is required."); return; }
-
-        setLoading(true);
-        setError("");
-        // Simulate async auth — replace with your actual API call
-        const url = `${window.__ENV__.VITE_API_URL}/auth${(mode === "register") ? "/register" : "/login"}`;
-        // console.log(url);
-        const res = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            credentials: 'include',
-            body: JSON.stringify(form)
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/me`, {
+          credentials: "include",
         });
         const data = await res.json();
-        if (!data.success) {
-            setLoading(false);
-            setForm({ email: "", password: "", name: "" });
-            setTimeout(() => {
-                setFeedbackType('error');
-                setFeedback(data.msg);
-                setTimeout(() => { setFeedback(""); setFeedbackType(null); }, 3000);
-            }, 500);
-            return;
+        if (data.authenticated) {
+          onLogin(data.user);
         }
+      } catch {
+        // Not authenticated yet
+      }
+    };
+    checkAuth();
+  }, [onLogin]);
+
+  const handleChange = (field) => (e) => {
+    setForm((f) => ({ ...f, [field]: e.target.value }));
+    if (error) setError("");
+  };
+
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (!form.email || !form.password) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+    if (mode === "register" && !form.name) {
+      setError("Please enter your full name.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      const endpoint = mode === "register" ? "/auth/register" : "/auth/login";
+      const res = await fetch(`${window.__ENV__.VITE_API_URL}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+
+      if (!data.success) {
         setLoading(false);
+        setForm({ email: "", password: "", name: "" });
+        setFeedbackType("error");
+        setFeedback(data.msg || "Authentication failed.");
+        setTimeout(() => {
+          setFeedback("");
+          setFeedbackType(null);
+        }, 4000);
+        return;
+      }
 
-        // Call parent with user data
-        onLogin?.(data.user);
-    };
+      setLoading(false);
+      onLogin?.(data.user);
+    } catch {
+      setLoading(false);
+      setError("Network error. Please try again.");
+    }
+  };
 
-    const handleForgotSubmit = async () => {
-        if (!forgotEmail) { setForgotError("Email is required."); return; }
-        setForgotLoading(true);
-        setForgotError("");
-        try {
-            const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/forgot`, {
-                method: "POST",
-                credentials: 'include',
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: forgotEmail }),
-            });
-            const data = await res.json();
-            if (!data.success) {
-                setForgotError(data.msg || "Request failed.");
-            } else {
-                setFeedbackType('success');
-                setFeedback(data.msg || "If this email exists, we've sent reset instructions.");
-                setShowForgot(false);
-                setForgotEmail("");
-                setTimeout(() => { setFeedback(""); setFeedbackType(null); }, 4000);
-            }
-        } catch (err) {
-            setForgotError("Request failed.");
-        } finally {
-            setForgotLoading(false);
-            setTimeout(() => setForgotError(""), 4000);
-        }
-    };
+  const handleForgotSubmit = async (e) => {
+    if (e) e.preventDefault();
+    if (!forgotEmail) {
+      setForgotError("Email is required.");
+      return;
+    }
+    setForgotLoading(true);
+    setForgotError("");
 
-    const handleOAuth = (platform) => {
-        window.location.href = `${window.__ENV__.VITE_API_URL}/auth/${platform}`;
-    };
+    try {
+      const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/forgot`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: forgotEmail }),
+      });
+      const data = await res.json();
 
-    const inputStyle = (focused) => ({
-        width: "100%",
-        boxSizing: "border-box",
-        padding: "11px 14px",
-        background: "#080b10",
-        border: `1px solid ${focused ? "#3b82f6" : "#1e2330"}`,
-        borderRadius: 8,
-        color: "#e2e8f0",
-        fontSize: 13,
-        fontFamily: "'JetBrains Mono', monospace",
-        outline: "none",
-        transition: "border-color 0.2s, box-shadow 0.2s",
-        boxShadow: focused ? "0 0 0 3px #3b82f610" : "none",
-    });
+      if (!data.success) {
+        setForgotError(data.msg || "Unable to send reset email.");
+      } else {
+        setFeedbackType("success");
+        setFeedback(data.msg || "Password reset instructions sent.");
+        setShowForgot(false);
+        setForgotEmail("");
+        setTimeout(() => {
+          setFeedback("");
+          setFeedbackType(null);
+        }, 4500);
+      }
+    } catch {
+      setForgotError("Unable to process request.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
 
-    const [focused, setFocused] = useState({});
-    const onFocus = (f) => setFocused((p) => ({ ...p, [f]: true }));
-    const onBlur = (f) => setFocused((p) => ({ ...p, [f]: false }));
+  const handleOAuth = (platform) => {
+    window.location.href = `${window.__ENV__.VITE_API_URL}/auth/${platform}`;
+  };
 
-    // Grid nodes for background
-    const nodes = Array.from({ length: 18 }, (_, i) => ({
-        top: `${Math.floor(Math.random() * 90) + 5}%`,
-        left: `${Math.floor(Math.random() * 90) + 5}%`,
-        animationDelay: `${i * 0.3}s`,
-    }));
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "var(--bg-app)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px 16px",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Floating Theme Switcher */}
+      <button
+        onClick={toggleTheme}
+        title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
+        style={{
+          position: "absolute",
+          top: 20,
+          right: 20,
+          width: 40,
+          height: 40,
+          borderRadius: "50%",
+          border: "1px solid var(--border-base)",
+          background: "var(--bg-card)",
+          color: "var(--text-secondary)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "var(--shadow-sm)",
+          zIndex: 10,
+        }}
+      >
+        {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
+      </button>
 
-    return (
-        <div style={{
-            minHeight: "100vh",
-            background: "#080b10",
+      {/* Ambient background decoration */}
+      <div
+        style={{
+          position: "absolute",
+          top: "10%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: 600,
+          height: 400,
+          background: "radial-gradient(ellipse, rgba(37,99,235,0.07) 0%, transparent 70%)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
+      {/* Main Container */}
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 440,
+          position: "relative",
+          zIndex: 1,
+          animation: "fadeIn 0.3s ease-out forwards",
+        }}
+      >
+        {/* Brand Header */}
+        <div style={{ textAlign: "center", marginBottom: 28 }}>
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 14,
+              background: "linear-gradient(135deg, var(--primary), #6366f1)",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#ffffff",
+              fontWeight: 900,
+              fontSize: 22,
+              marginBottom: 16,
+              boxShadow: "0 8px 20px rgba(37,99,235,0.25)",
+            }}
+          >
+            P
+          </div>
+          <h1
+            style={{
+              fontSize: 24,
+              fontWeight: 800,
+              color: "var(--text-primary)",
+              letterSpacing: "-0.5px",
+              marginBottom: 6,
+            }}
+          >
+            {mode === "login" ? "Welcome to PipelineHub" : "Create Developer Account"}
+          </h1>
+          <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.5 }}>
+            {mode === "login"
+              ? "Unified VCS webhooks, automation & event intelligence"
+              : "Start streaming events across GitHub, GitLab, and Bitbucket"}
+          </p>
+        </div>
+
+        {/* Card Surface */}
+        <div
+          style={{
+            background: "var(--bg-card)",
+            border: "1px solid var(--border-base)",
+            borderRadius: 16,
+            padding: "32px 28px",
+            boxShadow: "var(--shadow-lg)",
+          }}
+        >
+          {/* Feedback alert */}
+          {feedback && (
+            <div
+              style={{
+                marginBottom: 20,
+                padding: "12px 14px",
+                borderRadius: 10,
+                background: feedbackType === "success" ? "var(--success-light)" : "var(--danger-light)",
+                border: `1px solid ${feedbackType === "success" ? "var(--success-border)" : "var(--danger-border)"}`,
+                display: "flex",
+                alignItems: "flex-start",
+                gap: 10,
+              }}
+            >
+              {feedbackType === "success" ? (
+                <CheckCircle2 size={18} color="var(--success)" style={{ marginTop: 2, flexShrink: 0 }} />
+              ) : (
+                <AlertCircle size={18} color="var(--danger)" style={{ marginTop: 2, flexShrink: 0 }} />
+              )}
+              <div style={{ fontSize: 13, color: feedbackType === "success" ? "var(--success)" : "var(--danger)", lineHeight: 1.4, fontWeight: 500 }}>
+                {feedback}
+              </div>
+            </div>
+          )}
+
+          {/* OAuth Buttons */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 22 }}>
+            {[
+              { key: "github", label: "GitHub" },
+              { key: "gitlab", label: "GitLab" },
+              { key: "bitbucket", label: "Bitbucket" },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleOAuth(key)}
+                title={`Continue with ${label}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  padding: "10px 0",
+                  background: "var(--bg-card-subtle)",
+                  border: "1px solid var(--border-base)",
+                  borderRadius: 10,
+                  color: "var(--text-primary)",
+                  cursor: "pointer",
+                  fontSize: 13,
+                  fontWeight: 600,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "var(--bg-hover)";
+                  e.currentTarget.style.borderColor = "var(--border-strong)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "var(--bg-card-subtle)";
+                  e.currentTarget.style.borderColor = "var(--border-base)";
+                }}
+              >
+                {PLATFORM_ICONS[key]}
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Divider */}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22 }}>
+            <div style={{ flex: 1, height: 1, background: "var(--border-base)" }} />
+            <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.5px" }}>
+              OR WITH EMAIL
+            </span>
+            <div style={{ flex: 1, height: 1, background: "var(--border-base)" }} />
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {mode === "register" && (
+              <div>
+                <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                  Full Name
+                </label>
+                <div style={{ position: "relative" }}>
+                  <User size={16} color="var(--text-muted)" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
+                  <input
+                    type="text"
+                    placeholder="Alex Morgan"
+                    value={form.name}
+                    onChange={handleChange("name")}
+                    style={{
+                      width: "100%",
+                      padding: "11px 12px 11px 38px",
+                      borderRadius: 10,
+                      border: "1px solid var(--border-base)",
+                      background: "var(--bg-input)",
+                      color: "var(--text-primary)",
+                      fontSize: 13,
+                      outline: "none",
+                    }}
+                  />
+                </div>
+              </div>
+            )}
+
+            <div>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
+                Work Email
+              </label>
+              <div style={{ position: "relative" }}>
+                <Mail size={16} color="var(--text-muted)" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
+                <input
+                  type="email"
+                  placeholder="alex@company.com"
+                  value={form.email}
+                  onChange={handleChange("email")}
+                  style={{
+                    width: "100%",
+                    padding: "11px 12px 11px 38px",
+                    borderRadius: 10,
+                    border: "1px solid var(--border-base)",
+                    background: "var(--bg-input)",
+                    color: "var(--text-primary)",
+                    fontSize: 13,
+                    outline: "none",
+                  }}
+                />
+              </div>
+            </div>
+
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}>
+                  Password
+                </label>
+                {mode === "login" && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowForgot(true);
+                      setForgotError("");
+                      setForgotEmail(form.email || "");
+                    }}
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "var(--primary)",
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      padding: 0,
+                    }}
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <div style={{ position: "relative" }}>
+                <Lock size={16} color="var(--text-muted)" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
+                <input
+                  type={showPass ? "text" : "password"}
+                  placeholder="••••••••••••"
+                  value={form.password}
+                  onChange={handleChange("password")}
+                  style={{
+                    width: "100%",
+                    padding: "11px 40px 11px 38px",
+                    borderRadius: 10,
+                    border: "1px solid var(--border-base)",
+                    background: "var(--bg-input)",
+                    color: "var(--text-primary)",
+                    fontSize: 13,
+                    fontFamily: "'JetBrains Mono', monospace",
+                    outline: "none",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPass(!showPass)}
+                  style={{
+                    position: "absolute",
+                    right: 12,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    background: "none",
+                    border: "none",
+                    color: "var(--text-muted)",
+                    cursor: "pointer",
+                    padding: 0,
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div
+                style={{
+                  padding: "10px 12px",
+                  borderRadius: 8,
+                  background: "var(--danger-light)",
+                  border: "1px solid var(--danger-border)",
+                  color: "var(--danger)",
+                  fontSize: 12,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                <AlertCircle size={15} style={{ flexShrink: 0 }} />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                marginTop: 4,
+                width: "100%",
+                padding: "12px",
+                borderRadius: 10,
+                border: "none",
+                background: "var(--primary)",
+                color: "#ffffff",
+                fontSize: 14,
+                fontWeight: 700,
+                cursor: loading ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                boxShadow: "0 4px 14px rgba(37,99,235,0.3)",
+              }}
+            >
+              {loading ? (
+                <>
+                  <Loader2 size={16} style={{ animation: "spin 0.8s linear infinite" }} />
+                  <span>{mode === "login" ? "Authenticating…" : "Creating account…"}</span>
+                </>
+              ) : (
+                <>
+                  <span>{mode === "login" ? "Sign In" : "Get Started"}</span>
+                  <ArrowRight size={16} />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Toggle Login/Register */}
+          <div style={{ marginTop: 22, textAlign: "center", fontSize: 13, color: "var(--text-secondary)" }}>
+            {mode === "login" ? (
+              <>
+                Don't have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("register");
+                    setError("");
+                  }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "var(--primary)",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                >
+                  Create one now
+                </button>
+              </>
+            ) : (
+              <>
+                Already registered?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMode("login");
+                    setError("");
+                  }}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "var(--primary)",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    padding: 0,
+                  }}
+                >
+                  Sign in
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* System operational badge */}
+        <div style={{ marginTop: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+          <div
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: "var(--success)",
+              boxShadow: "0 0 6px rgba(16, 185, 129, 0.5)",
+            }}
+          />
+          <span style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "'JetBrains Mono', monospace" }}>
+            All webhook endpoints active & verified
+          </span>
+        </div>
+      </div>
+
+      {/* Forgot Password Modal */}
+      {showForgot && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(15, 23, 42, 0.5)",
+            backdropFilter: "blur(6px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontFamily: "'Inter', 'Segoe UI', sans-serif",
-            color: "#94a3b8",
-            position: "relative",
-            overflow: "hidden",
-        }}>
-            <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        input::placeholder { color: #334155; }
+            zIndex: 100,
+            padding: 20,
+          }}
+          onClick={() => setShowForgot(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "100%",
+              maxWidth: 420,
+              background: "var(--bg-card)",
+              border: "1px solid var(--border-base)",
+              borderRadius: 16,
+              padding: 28,
+              boxShadow: "var(--shadow-xl)",
+              animation: "fadeIn 0.25s ease-out forwards",
+            }}
+          >
+            <h2 style={{ fontSize: 18, fontWeight: 800, color: "var(--text-primary)", marginBottom: 6 }}>
+              Reset your password
+            </h2>
+            <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 18, lineHeight: 1.5 }}>
+              Enter your registered account email and we'll send you secure recovery instructions.
+            </p>
 
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(18px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-          0%, 100% { opacity: 0.15; transform: scale(1); }
-          50%       { opacity: 0.4;  transform: scale(1.6); }
-        }
-        @keyframes gridLine {
-          0%   { opacity: 0; }
-          50%  { opacity: 1; }
-          100% { opacity: 0; }
-        }
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
+            <form onSubmit={handleForgotSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <input
+                type="email"
+                placeholder="alex@company.com"
+                value={forgotEmail}
+                onChange={(e) => setForgotEmail(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "11px 14px",
+                  borderRadius: 10,
+                  border: "1px solid var(--border-base)",
+                  background: "var(--bg-input)",
+                  color: "var(--text-primary)",
+                  fontSize: 13,
+                  outline: "none",
+                }}
+              />
 
-        .login-card {
-          opacity: 0;
-          animation: fadeUp 0.5s ease forwards;
-          animation-delay: 0.1s;
-        }
-        .login-field {
-          opacity: 0;
-          animation: fadeUp 0.4s ease forwards;
-        }
-        .login-field:nth-child(1) { animation-delay: 0.2s; }
-        .login-field:nth-child(2) { animation-delay: 0.3s; }
-        .login-field:nth-child(3) { animation-delay: 0.4s; }
-        .login-field:nth-child(4) { animation-delay: 0.5s; }
-
-        .node-dot {
-          animation: pulse 4s ease-in-out infinite;
-        }
-        .oauth-btn:hover {
-          background: #1a2035 !important;
-          border-color: #334155 !important;
-          color: #e2e8f0 !important;
-        }
-        .toggle-mode:hover { color: #60a5fa !important; }
-        .submit-btn:hover:not(:disabled) { background: #2563eb !important; }
-                .submit-btn:active:not(:disabled) { transform: scale(0.98); }
-
-                /* Forgot-password modal */
-                .modal-backdrop {
-                    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 60;
-                    background: linear-gradient(rgba(2,6,23,0.55), rgba(2,6,23,0.55));
-                    backdrop-filter: blur(4px);
-                    padding: 24px;
-                }
-                .modal-panel {
-                    width: 100%; max-width: 520px; background: linear-gradient(180deg, #071018, #0b1116);
-                    border: 1px solid rgba(255,255,255,0.03);
-                    border-radius: 14px; padding: 22px; box-shadow: 0 20px 50px rgba(2,6,23,0.75);
-                    transform: translateY(8px) scale(0.995); opacity: 0; animation: fadeUp 260ms cubic-bezier(.2,.9,.2,1) forwards;
-                }
-                .modal-title { font-size: 17px; font-weight: 800; color: #e6eef8; margin-bottom: 6px; }
-                .modal-desc { font-size: 13px; color: #94a3b8; margin-bottom: 14px; line-height: 1.35; }
-                .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
-                .modal-panel input { background: #081018; border: 1px solid #16202a; border-radius: 8px; padding: 10px 12px; color: #e6eef8; font-family: 'JetBrains Mono', monospace; }
-                .modal-panel input::placeholder { color: #334155; }
-                .modal-actions button { min-width: 120px; padding: 9px 12px; border-radius: 8px; font-weight: 700; }
-                .modal-actions button:first-child { background: transparent; border: 1px solid #1e2330; color: #94a3b8; }
-                .modal-actions button:last-child { background: #2563eb; border: none; color: #fff; }
-                .modal-actions button:last-child:hover { background: #1f56d6; }
-                @media (max-width: 480px) { .modal-panel { padding: 16px; max-width: 420px; } .modal-actions { flex-direction: column-reverse; gap: 8px; } }
-            `}</style>
-
-            {/* ── Background: subtle grid + floating nodes ── */}
-            <div style={{
-                position: "absolute", inset: 0, zIndex: 0,
-                backgroundImage: `
-          linear-gradient(#1e233008 1px, transparent 1px),
-          linear-gradient(90deg, #1e233008 1px, transparent 1px)
-        `,
-                backgroundSize: "40px 40px",
-            }} />
-
-            {/* Glow orb */}
-            <div style={{
-                position: "absolute", top: "20%", left: "50%",
-                transform: "translateX(-50%)",
-                width: 500, height: 300,
-                background: "radial-gradient(ellipse, #3b82f608 0%, transparent 70%)",
-                pointerEvents: "none", zIndex: 0,
-            }} />
-
-            {/* Floating nodes */}
-            {nodes.map((n, i) => (
-                <div key={i} className="node-dot" style={{
-                    position: "absolute", width: 3, height: 3,
-                    borderRadius: "50%", background: "#3b82f6",
-                    top: n.top, left: n.left,
-                    animationDelay: n.animationDelay,
-                    zIndex: 0,
-                }} />
-            ))}
-
-            {/* ── Card ── */}
-            <div className="login-card" style={{
-                position: "relative", zIndex: 1,
-                width: "100%", maxWidth: 420,
-                margin: "0 16px",
-                background: "#0a0d12",
-                border: "1px solid #1e2330",
-                borderRadius: 14,
-                padding: "36px 32px",
-                boxShadow: "0 0 0 1px #ffffff04, 0 32px 64px #00000060",
-            }}>
-
-                {/* error card */}
-                {feedback ? (
-                    <div style={{
-                        padding: "10px 14px",
-                        background: feedbackType === 'success' ? "#052e16" : "#ef444410",
-                        border: feedbackType === 'success' ? "1px solid #064e3b" : "1px solid #ef444430",
-                        borderLeft: `3px solid ${feedbackType === 'success' ? '#16a34a' : '#ef4444'}`,
-                        borderRadius: 8,
-                        display: "flex",
-                        alignItems: "flex-start",
-                        gap: 10,
-                    }}>
-                        <span style={{ color: feedbackType === 'success' ? "#86efac" : "#ef4444", fontSize: 15, lineHeight: 1.4 }}>{feedbackType === 'success' ? '✓' : '⚠'}</span>
-                        <div>
-                            <div style={{ fontSize: 13, fontWeight: 600, color: feedbackType === 'success' ? "#86efac" : "#f87171", marginBottom: 2 }}>
-                                {feedbackType === 'success' ? 'Success' : 'Authentication failed'}
-                            </div>
-                            <div style={{ fontSize: 12, color: "#94a3b8" }}>
-                                {feedback}
-                            </div>
-                        </div>
-                    </div>
-                ) : null}
-                {/* Logo + title */}
-                <div style={{ textAlign: "center", marginBottom: 32 }}>
-                    <img
-                        src="./logo.png"
-                        alt="Logo"
-                        style={{ width: 40, height: 50, objectFit: "contain", borderRadius: "10px" }}
-                    />
-                    <div style={{ fontSize: 20, fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.5px", marginBottom: 4 }}>
-                        {mode === "login" ? "Welcome back" : "Create account"}
-                    </div>
-                    <div style={{ fontSize: 12, color: "#475569" }}>
-                        {mode === "login"
-                            ? "Sign in to PipelineHub"
-                            : "Start monitoring your repositories"}
-                    </div>
+              {forgotError && (
+                <div
+                  style={{
+                    padding: "9px 12px",
+                    borderRadius: 8,
+                    background: "var(--danger-light)",
+                    border: "1px solid var(--danger-border)",
+                    color: "var(--danger)",
+                    fontSize: 12,
+                  }}
+                >
+                  {forgotError}
                 </div>
-                {/* Forgot password modal */}
-                {showForgot && (
-                    <div className="modal-backdrop" onClick={() => setShowForgot(false)}>
-                        <div className="modal-panel" role="dialog" aria-modal="true" aria-labelledby="forgot-title" onClick={e => e.stopPropagation()}>
-                            <div id="forgot-title" className="modal-title">Reset your password</div>
-                            <div className="modal-desc">Enter the email address for your account and we'll send a reset link.</div>
-                            <input
-                                type="email"
-                                placeholder="john@example.com"
-                                value={forgotEmail}
-                                onChange={e => setForgotEmail(e.target.value)}
-                                onFocus={() => onFocus("forgotEmail")}
-                                onBlur={() => onBlur("forgotEmail")}
-                                style={{ ...inputStyle(focused.forgotEmail), width: "100%", marginBottom: 6 }}
-                            />
-                            {forgotError && (
-                                <div style={{ padding: "8px 10px", borderRadius: 7, background: "#ef444412", border: "1px solid #ef444430", fontSize: 12, color: "#f87171", marginBottom: 6 }}>
-                                    {forgotError}
-                                </div>
-                            )}
-                            <div className="modal-actions">
-                                <button type="button" onClick={() => setShowForgot(false)} style={{ background: "none", border: "1px solid #1e2330", padding: "8px 12px", borderRadius: 8, color: "#94a3b8", cursor: "pointer" }}>Cancel</button>
-                                <button type="button" onClick={handleForgotSubmit} disabled={forgotLoading} style={{ background: "#3b82f6", border: "none", padding: "8px 12px", borderRadius: 8, color: "#fff", fontWeight: 700, cursor: forgotLoading ? "not-allowed" : "pointer" }}>
-                                    {forgotLoading ? "Sending…" : "Send reset link"}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+              )}
 
-                {/* OAuth buttons */}
-                <div style={{ display: "flex", gap: 8, marginBottom: 24 }}>
-                    {[
-                        { key: "github", color: "#e2e8f0" },
-                        { key: "gitlab", color: "#fc6d26" },
-                        { key: "bitbucket", color: "#0052cc" },
-                    ].map(({ key, color }, i) => (
-                        <button
-                            key={key}
-                            className="oauth-btn"
-                            onClick={() => handleOAuth(key)}
-                            title={`Continue with ${key.charAt(0).toUpperCase() + key.slice(1)}`}
-                            style={{
-                                flex: 1,
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                padding: "11px",
-                                background: "#0f1117",
-                                border: "1px solid #1e2330",
-                                borderRadius: 8, cursor: "pointer",
-                                color,
-                                transition: "all 0.15s",
-                                opacity: 0,
-                                animation: `fadeUp 0.4s ease forwards ${0.15 + i * 0.08}s`,
-                            }}
-                        >
-                            {PLATFORM_ICONS[key]}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Divider */}
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24, opacity: 0, animation: "fadeUp 0.4s ease forwards 0.4s" }}>
-                    <div style={{ flex: 1, height: 1, background: "#1e2330" }} />
-                    <span style={{ fontSize: 11, color: "#334155", fontFamily: "monospace", letterSpacing: "0.5px" }}>OR</span>
-                    <div style={{ flex: 1, height: 1, background: "#1e2330" }} />
-                </div>
-
-                {/* Form fields */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-
-                    {mode === "register" && (
-                        <div className="login-field">
-                            <label style={{ fontSize: 11, color: "#475569", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.8px", fontWeight: 600 }}>
-                                Full Name
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="Ali Hassan"
-                                value={form.name}
-                                onChange={handleChange("name")}
-                                onFocus={() => onFocus("name")}
-                                onBlur={() => onBlur("name")}
-                                style={inputStyle(focused.name)}
-                            />
-                        </div>
-                    )}
-
-                    <div className="login-field">
-                        <label style={{ fontSize: 11, color: "#475569", display: "block", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.8px", fontWeight: 600 }}>
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            placeholder="john@example.com"
-                            value={form.email}
-                            onChange={handleChange("email")}
-                            onFocus={() => onFocus("email")}
-                            onBlur={() => onBlur("email")}
-                            style={inputStyle(focused.email)}
-                        />
-                    </div>
-
-                    <div className="login-field">
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                            <label style={{ fontSize: 11, color: "#475569", textTransform: "uppercase", letterSpacing: "0.8px", fontWeight: 600 }}>
-                                Password
-                            </label>
-                            {mode === "login" && (
-                                <button
-                                    type="button"
-                                    onClick={() => { setShowForgot(true); setForgotError(""); setForgotEmail(form.email || ""); }}
-                                    style={{ background: "none", border: "none", fontSize: 11, color: "#3b82f6", cursor: "pointer", padding: 0 }}
-                                >
-                                    Forgot password?
-                                </button>
-                            )}
-                        </div>
-                        <div style={{ position: "relative" }}>
-                            <input
-                                type={showPass ? "text" : "password"}
-                                placeholder="••••••••••••"
-                                value={form.password}
-                                onChange={handleChange("password")}
-                                onFocus={() => onFocus("password")}
-                                onBlur={() => onBlur("password")}
-                                style={{ ...inputStyle(focused.password), paddingRight: 42 }}
-                            />
-                            <button
-                                onClick={() => setShowPass(!showPass)}
-                                style={{
-                                    position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
-                                    background: "none", border: "none", color: "#334155",
-                                    cursor: "pointer", padding: 0, fontSize: 13, lineHeight: 1,
-                                    transition: "color 0.15s",
-                                }}
-                                onMouseEnter={e => e.currentTarget.style.color = "#64748b"}
-                                onMouseLeave={e => e.currentTarget.style.color = "#334155"}
-                            >
-                                {showPass ? "⊙" : "⊗"}
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Error */}
-                    {error && (
-                        <div style={{
-                            padding: "9px 12px", borderRadius: 7,
-                            background: "#ef444412", border: "1px solid #ef444430",
-                            fontSize: 12, color: "#f87171",
-                            display: "flex", alignItems: "center", gap: 8,
-                        }}>
-                            <span>⚠</span> {error}
-                        </div>
-                    )}
-
-                    {/* Submit */}
-                    <div className="login-field">
-                        <button
-                            className="submit-btn"
-                            onClick={handleSubmit}
-                            disabled={loading}
-                            style={{
-                                width: "100%", padding: "12px",
-                                background: "#3b82f6",
-                                border: "none", borderRadius: 8,
-                                color: "#fff", fontWeight: 700, fontSize: 13,
-                                cursor: loading ? "not-allowed" : "pointer",
-                                transition: "background 0.15s, transform 0.1s",
-                                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                                letterSpacing: "0.3px",
-                                opacity: loading ? 0.8 : 1,
-                            }}
-                        >
-                            {loading ? (
-                                <>
-                                    <div style={{
-                                        width: 14, height: 14,
-                                        border: "2px solid #ffffff40",
-                                        borderTop: "2px solid #fff",
-                                        borderRadius: "50%",
-                                        animation: "spin 0.7s linear infinite",
-                                    }} />
-                                    {mode === "login" ? "Signing in…" : "Creating account…"}
-                                </>
-                            ) : (
-                                mode === "login" ? "Sign in" : "Create account"
-                            )}
-                        </button>
-                    </div>
-                </div>
-
-                {/* Toggle mode */}
-                <div style={{ textAlign: "center", marginTop: 24, fontSize: 12, color: "#475569" }}>
-                    {mode === "login" ? (
-                        <>
-                            {"No account? "}
-                            <span style={{ color: "#3b82f6", fontWeight: 600 }}>
-                                $ create-account --provider oauth ↑
-                            </span>
-                        </>
-                    ) : (
-                        <>
-                            {"Already initialized? "}
-                            <button
-                                className="toggle-mode"
-                                onClick={() => { setMode("login"); setError(""); setForm({ email: "", password: "", name: "" }); }}
-                                style={{
-                                    background: "none", border: "none",
-                                    color: "#3b82f6", cursor: "pointer",
-                                    fontSize: 12, fontWeight: 600, padding: 0,
-                                    transition: "color 0.15s",
-                                }}
-                            >
-                                Sign in →
-                            </button>
-                        </>
-                    )}
-                </div>
-
-                {/* Footer note */}
-                <div style={{
-                    marginTop: 28, paddingTop: 20,
-                    borderTop: "1px solid #1e2330",
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-                }}>
-                    <div style={{ width: 5, height: 5, borderRadius: "50%", background: "#10b981", boxShadow: "0 0 5px #10b98180" }} />
-                    <span style={{ fontSize: 11, color: "#334155", fontFamily: "monospace" }}>
-                        All systems operational
-                    </span>
-                </div>
-            </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 6 }}>
+                <button
+                  type="button"
+                  onClick={() => setShowForgot(false)}
+                  style={{
+                    padding: "9px 14px",
+                    borderRadius: 8,
+                    border: "1px solid var(--border-base)",
+                    background: "transparent",
+                    color: "var(--text-secondary)",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  style={{
+                    padding: "9px 16px",
+                    borderRadius: 8,
+                    border: "none",
+                    background: "var(--primary)",
+                    color: "#ffffff",
+                    fontSize: 13,
+                    fontWeight: 700,
+                    cursor: forgotLoading ? "not-allowed" : "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
+                >
+                  {forgotLoading && <Loader2 size={14} style={{ animation: "spin 0.8s linear infinite" }} />}
+                  <span>{forgotLoading ? "Sending…" : "Send Reset Link"}</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 }

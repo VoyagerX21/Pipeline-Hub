@@ -12,14 +12,14 @@ export const MOCK_EVENTS = [
 ];
 
 export const EVENT_COLORS = {
-  push: "#3b82f6",
-  pull_request: "#a855f7",
+  push: "#2563eb",
+  pull_request: "#8b5cf6",
   pull: "#f59e0b",
   merge: "#10b981",
 };
 
 export const PLATFORM_COLORS = {
-  github: "#e2e8f0",
+  github: "currentColor",
   gitlab: "#fc6d26",
   bitbucket: "#0052cc",
 };

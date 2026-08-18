@@ -1,19 +1,22 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useContext } from "react";
+import { Activity, BarChart3, FolderGit2, Webhook, LogOut, Sun, Moon } from "lucide-react";
 import { UserContext } from "../context/UserContext";
+import { useTheme } from "../context/ThemeContext";
 import Avatar from "./Avatar";
 
 const NAV_ITEMS = [
-  { id: "events", path: "/events", icon: "⬡", label: "Events" },
-  { id: "analytics", path: "/analytics", icon: "◈", label: "Analytics" },
-  { id: "repos", path: "/repos", icon: "⬢", label: "Repos" },
-  { id: "webhooks", path: "/webhooks", icon: "⟐", label: "Webhooks" },
+  { id: "events", path: "/events", icon: Activity, label: "Live Events" },
+  { id: "analytics", path: "/analytics", icon: BarChart3, label: "Analytics" },
+  { id: "repos", path: "/repos", icon: FolderGit2, label: "Repositories" },
+  { id: "webhooks", path: "/webhooks", icon: Webhook, label: "Webhooks & Automation" },
 ];
 
 export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const { user } = useContext(UserContext);
+  const { theme, toggleTheme } = useTheme();
 
   const handleLogout = async () => {
     try {
@@ -22,7 +25,6 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
         credentials: "include",
       });
     } catch (err) {
-      // ignore network errors and proceed to redirect
       console.error("Logout failed", err);
     }
     changeUser(null);
@@ -30,90 +32,183 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
   };
 
   return (
-    <div style={{
-      width: 56,
-      height: "100vh",
-      position: "fixed",   // 👈 sticks to screen
-      top: 0,
-      left: 0,
-      background: "#0a0d12",
-      borderRight: "1px solid #1e2330",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      padding: "16px 0",
-      gap: 4,
-      flexShrink: 0,
-      zIndex: 10,
-    }}>
-      {/* Logo */}
-      <div style={{ marginBottom: 16, color: "#3b82f6", fontSize: 22, fontWeight: 900, lineHeight: 1, letterSpacing: -1 }}>
-        V
-      </div>
-      <button
-        onClick={() => setSidePanel(sidePanel === "profile" ? null : "profile")}
-        title="Profile"
+    <aside
+      style={{
+        width: 60,
+        height: "100vh",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        background: "var(--bg-sidebar)",
+        borderRight: "1px solid var(--border-base)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "16px 0",
+        gap: 8,
+        flexShrink: 0,
+        zIndex: 40,
+        boxShadow: "var(--shadow-sm)",
+      }}
+    >
+      {/* Brand Icon */}
+      <div
+        onClick={() => navigate("/events")}
+        title="PipelineHub"
         style={{
-          width: 34, height: 34, borderRadius: "50%",
-          background: sidePanel === "profile" ? "#3b82f6" : "#1e2330",
-          border: `2px solid ${sidePanel === "profile" ? "#3b82f6" : "#334155"}`,
-          color: "#e2e8f0", fontWeight: 800, fontSize: 12, cursor: "pointer",
-          fontFamily: "monospace", display: "flex", alignItems: "center", justifyContent: "center",
-        }}
-      >
-        <Avatar avatarURL={user.avatarUrl} />
-      </button>
-
-      {/* Nav items */}
-      <br />
-      {NAV_ITEMS.map(item => {
-        const active = pathname.startsWith(item.path);
-        return (
-          <button
-            key={item.id}
-            onClick={() => navigate(item.path)}
-            title={item.label}
-            style={{
-              width: 40, height: 40, borderRadius: 8, border: "none",
-              background: active ? "#1a2035" : "transparent",
-              color: active ? "#3b82f6" : "#334155",
-              cursor: "pointer", fontSize: 18,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              transition: "all 0.15s",
-              borderLeft: active ? "2px solid #3b82f6" : "2px solid transparent",
-            }}
-            onMouseEnter={e => { if (!active) e.currentTarget.style.color = "#64748b"; }}
-            onMouseLeave={e => { if (!active) e.currentTarget.style.color = "#334155"; }}
-          >
-            {item.icon}
-          </button>
-        );
-      })}
-
-      <div style={{ flex: 1 }} />
-
-      {/* Logout (icon only) */}
-      <button
-        onClick={handleLogout}
-        title="Logout"
-        style={{
-          width: 30,
-          height: 30,
-          borderRadius: 8,
-          border: "none",
-          backgroundColor: "#d84242",
-          color: "white",
-          cursor: "pointer",
-          fontSize: 18,
+          width: 38,
+          height: 38,
+          borderRadius: 10,
+          background: "linear-gradient(135deg, var(--primary), #6366f1)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          transition: "all 0.15s",
-          marginBottom: 6,
+          color: "#ffffff",
+          fontWeight: 900,
+          fontSize: 16,
+          letterSpacing: "-0.5px",
+          cursor: "pointer",
+          marginBottom: 12,
+          boxShadow: "0 4px 12px rgba(37, 99, 235, 0.25)",
         }}
       >
-        ⎋
+        P
+      </div>
+
+      {/* User Profile Trigger */}
+      <button
+        onClick={() => setSidePanel(sidePanel === "profile" ? null : "profile")}
+        title="Profile & Settings"
+        style={{
+          width: 38,
+          height: 38,
+          borderRadius: "50%",
+          background: sidePanel === "profile" ? "var(--primary-light)" : "transparent",
+          border: `2px solid ${sidePanel === "profile" ? "var(--primary)" : "var(--border-base)"}`,
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 0,
+          marginBottom: 12,
+        }}
+      >
+        <Avatar avatarURL={user?.avatarUrl} name={user?.name || user?.email} size={34} />
       </button>
-    </div>
+
+      {/* Nav items */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%", alignItems: "center" }}>
+        {NAV_ITEMS.map((item) => {
+          const active = pathname.startsWith(item.path);
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.id}
+              onClick={() => navigate(item.path)}
+              title={item.label}
+              style={{
+                width: 42,
+                height: 42,
+                borderRadius: 10,
+                border: "none",
+                background: active ? "var(--primary-light)" : "transparent",
+                color: active ? "var(--primary)" : "var(--text-muted)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+              }}
+              onMouseEnter={(e) => {
+                if (!active) {
+                  e.currentTarget.style.background = "var(--bg-hover)";
+                  e.currentTarget.style.color = "var(--text-primary)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!active) {
+                  e.currentTarget.style.background = "transparent";
+                  e.currentTarget.style.color = "var(--text-muted)";
+                }
+              }}
+            >
+              {active && (
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    top: 8,
+                    bottom: 8,
+                    width: 3,
+                    borderRadius: "0 4px 4px 0",
+                    background: "var(--primary)",
+                  }}
+                />
+              )}
+              <Icon size={19} strokeWidth={active ? 2.3 : 1.8} />
+            </button>
+          );
+        })}
+      </div>
+
+      <div style={{ flex: 1 }} />
+
+      {/* Theme Switcher */}
+      <button
+        onClick={toggleTheme}
+        title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: 8,
+          border: "1px solid var(--border-base)",
+          background: "var(--bg-card)",
+          color: "var(--text-secondary)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 8,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "var(--bg-hover)";
+          e.currentTarget.style.color = "var(--text-primary)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "var(--bg-card)";
+          e.currentTarget.style.color = "var(--text-secondary)";
+        }}
+      >
+        {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+      </button>
+
+      {/* Logout button */}
+      <button
+        onClick={handleLogout}
+        title="Sign Out"
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: 8,
+          border: "1px solid transparent",
+          background: "var(--danger-light)",
+          color: "var(--danger)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "var(--danger)";
+          e.currentTarget.style.color = "#ffffff";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "var(--danger-light)";
+          e.currentTarget.style.color = "var(--danger)";
+        }}
+      >
+        <LogOut size={16} />
+      </button>
+    </aside>
   );
 }

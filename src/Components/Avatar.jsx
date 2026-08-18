@@ -1,28 +1,49 @@
-export default function Avatar({ avatarURL, color = "#3b82f6", size = 32 }) {
+import { useState } from "react";
+
+export default function Avatar({ avatarURL, name = "User", color = "var(--primary)", size = 32 }) {
+  const [imgError, setImgError] = useState(false);
+
+  const initials = (name || "U")
+    .split(/[\s._-]+/)
+    .filter(Boolean)
+    .map((part) => part[0]?.toUpperCase())
+    .join("")
+    .slice(0, 2) || "U";
+
   return (
     <div
       style={{
         width: size,
         height: size,
         borderRadius: "50%",
-        background: `${color}22`,
-        border: `1.5px solid ${color}55`,
+        background: `${color}18`,
+        border: `1.5px solid ${color}44`,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         flexShrink: 0,
-        overflow: "hidden"   // ⭐ important
+        overflow: "hidden",
+        fontWeight: 700,
+        fontSize: Math.max(10, Math.floor(size * 0.38)),
+        color: color,
+        fontFamily: "'JetBrains Mono', monospace",
+        userSelect: "none",
       }}
     >
-      <img
-        src={avatarURL}
-        alt="avatar"
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",   // ⭐ keeps aspect ratio
-        }}
-      />
+      {avatarURL && !imgError ? (
+        <img
+          src={avatarURL}
+          alt={name}
+          onError={() => setImgError(true)}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
+      ) : (
+        initials
+      )}
     </div>
   );
 }

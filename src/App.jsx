@@ -12,19 +12,18 @@ import WebhooksPanel from "./Components/WebhooksPanel";
 import Login from "./Components/Login";
 import ResetPassword from "./Components/ResetPassword";
 import { UserContext } from "./context/UserContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
-/* ─── Constants ──────────────────────────────────────────────── */
-const MIN_PX      = 220;   // minimum width for either pane
-const MAX_PCT     = 0.78;  // left pane can't exceed 78%
-const DEFAULT_PCT = 0.55;  // initial split (55% events list, 45% detail)
+const MIN_PX = 280;
+const MAX_PCT = 0.78;
+const DEFAULT_PCT = 0.55;
 const STORAGE_KEY = "events-split-pct";
 
-/* ─── ResizableSplitPane (inline, no extra file needed) ─────── */
 function ResizableSplitPane({ left, right }) {
   const containerRef = useRef(null);
-  const dragging     = useRef(false);
-  const startX       = useRef(0);
-  const startPct     = useRef(0);
+  const dragging = useRef(false);
+  const startX = useRef(0);
+  const startPct = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
 
   const [pct, setPct] = useState(() => {
@@ -41,21 +40,21 @@ function ResizableSplitPane({ left, right }) {
 
   const onPointerDown = useCallback((e) => {
     e.preventDefault();
-    dragging.current  = true;
-    startX.current    = e.clientX;
-    startPct.current  = pct;
+    dragging.current = true;
+    startX.current = e.clientX;
+    startPct.current = pct;
     setIsDragging(true);
     e.currentTarget.setPointerCapture(e.pointerId);
   }, [pct]);
 
   const onPointerMove = useCallback((e) => {
     if (!dragging.current || !containerRef.current) return;
-    const w   = containerRef.current.offsetWidth;
-    const dx  = e.clientX - startX.current;
+    const w = containerRef.current.offsetWidth;
+    const dx = e.clientX - startX.current;
     setPct(clamp(startPct.current + dx / w));
   }, [clamp]);
 
-  const onPointerUp = useCallback((e) => {
+  const onPointerUp = useCallback(() => {
     if (!dragging.current) return;
     dragging.current = false;
     setIsDragging(false);
@@ -67,25 +66,23 @@ function ResizableSplitPane({ left, right }) {
     localStorage.setItem(STORAGE_KEY, DEFAULT_PCT);
   }, []);
 
-  /* prevent text selection / cursor flicker during drag */
   useEffect(() => {
     document.body.style.userSelect = isDragging ? "none" : "";
-    document.body.style.cursor     = isDragging ? "col-resize" : "";
+    document.body.style.cursor = isDragging ? "col-resize" : "";
     return () => {
       document.body.style.userSelect = "";
-      document.body.style.cursor     = "";
+      document.body.style.cursor = "";
     };
   }, [isDragging]);
 
   return (
     <div ref={containerRef} style={{ flex: 1, display: "flex", minHeight: 0, height: "100%", overflow: "hidden" }}>
-
-      {/* Left pane */}
+      {/* Left Pane (Events list) */}
       <div style={{ width: `${pct * 100}%`, display: "flex", flexDirection: "column", overflow: "hidden", flexShrink: 0 }}>
         {left}
       </div>
 
-      {/* Drag handle */}
+      {/* Drag Split Handle */}
       <div
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -98,78 +95,87 @@ function ResizableSplitPane({ left, right }) {
           flexShrink: 0,
           position: "relative",
           cursor: "col-resize",
-          background: isDragging ? "#3b82f6" : "transparent",
-          borderLeft: "1px solid #1e2330",
+          background: isDragging ? "var(--primary)" : "transparent",
+          borderLeft: "1px solid var(--border-base)",
           transition: "background 0.15s",
           zIndex: 10,
         }}
       >
-        {/* Wider invisible hit zone + grip dots */}
-        <div style={{
-          position: "absolute",
-          inset: "0 -5px",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 4,
-        }}>
-          {[0, 1, 2, 3, 4].map(i => (
-            <div key={i} style={{
-              width: 3, height: 3, borderRadius: "50%",
-              background: isDragging ? "#3b82f6" : "#2d3a4a",
-              transition: "background 0.15s",
-            }} />
+        <div
+          style={{
+            position: "absolute",
+            inset: "0 -4px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 4,
+          }}
+        >
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              style={{
+                width: 3,
+                height: 3,
+                borderRadius: "50%",
+                background: isDragging ? "var(--primary)" : "var(--text-muted)",
+                opacity: 0.6,
+              }}
+            />
           ))}
         </div>
       </div>
 
-      {/* Right pane */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: MIN_PX, background: "#0a0d12" }}>
+      {/* Right Pane (Event inspector) */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", minWidth: MIN_PX, background: "var(--bg-card)" }}>
         {right}
       </div>
     </div>
   );
 }
 
-/* ─── Dashboard Layout ───────────────────────────────────────── */
 function DashboardLayout({ changeUser }) {
-  const [sidePanel, setSidePanel]       = useState(null);
+  const [sidePanel, setSidePanel] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [events, setEvents]             = useState([]);
+  const [events, setEvents] = useState([]);
 
   const { user } = useContext(UserContext);
 
-  const fetchEvents = async () => {
-    try {
-      const res  = await fetch(`${window.__ENV__.VITE_API_URL}/events/list/${user._id}`, { credentials: "include" });
-      const data = await res.json();
-      if (data.success) setEvents(data.events);
-      else console.error("Failed to fetch events");
-    } catch (err) {
-      console.error("Fetch error:", err);
-    }
-  };
-
   useEffect(() => {
-    if (user) fetchEvents();
+    let active = true;
+    if (!user?._id) return;
+    async function loadEvents() {
+      try {
+        const res = await fetch(`${window.__ENV__.VITE_API_URL}/events/list/${user._id}`, { credentials: "include" });
+        const data = await res.json();
+        if (active && data.success) {
+          setEvents(data.events || []);
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    }
+    loadEvents();
+    return () => {
+      active = false;
+    };
   }, [user]);
 
   return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden", background: "#080b10", color: "#94a3b8" }}>
+    <div style={{ display: "flex", height: "100vh", width: "100vw", overflow: "hidden", background: "var(--bg-app)", color: "var(--text-primary)" }}>
       <Sidebar sidePanel={sidePanel} setSidePanel={setSidePanel} changeUser={changeUser} />
 
       {sidePanel === "profile" && (
         <ProfilePanel onClose={() => setSidePanel(null)} />
       )}
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0, overflow: "hidden", marginLeft: "50px" }}>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, minHeight: 0, overflow: "hidden", marginLeft: "60px" }}>
         <Header filteredCount={events.length} />
 
-        <div style={{ flex: 1, minHeight: 0, display: "flex", overflow: "hidden" }}>
+        <main style={{ flex: 1, minHeight: 0, display: "flex", overflow: "hidden" }}>
           <Routes>
-            <Route path="/" element={<Navigate to="/events" />} />
-
+            <Route path="/" element={<Navigate to="/events" replace />} />
             <Route
               path="/events"
               element={
@@ -190,26 +196,24 @@ function DashboardLayout({ changeUser }) {
                 />
               }
             />
-
             <Route path="/analytics" element={<AnalyticsPanel />} />
-            <Route path="/repos"     element={<ReposPanel />} />
-            <Route path="/webhooks"  element={<WebhooksPanel />} />
+            <Route path="/repos" element={<ReposPanel />} />
+            <Route path="/webhooks" element={<WebhooksPanel />} />
           </Routes>
-        </div>
+        </main>
       </div>
     </div>
   );
 }
 
-/* ─── App Root ───────────────────────────────────────────────── */
 export default function App() {
-  const [user, setUser]     = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
-        const res  = await fetch(`${window.__ENV__.VITE_API_URL}/auth/me`, { credentials: "include" });
+        const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/me`, { credentials: "include" });
         const data = await res.json();
         if (data.success) setUser(data.user);
       } catch (err) {
@@ -222,20 +226,22 @@ export default function App() {
   if (loading) return null;
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/reset-password/:token" element={<ResetPassword />} />
-          <Route
-            path="/login"
-            element={user ? <Navigate to="/events" /> : <Login onLogin={setUser} />}
-          />
-          <Route
-            path="/*"
-            element={user ? <DashboardLayout changeUser={setUser} /> : <Navigate to="/login" />}
-          />
-        </Routes>
-      </BrowserRouter>
-    </UserContext.Provider>
+    <ThemeProvider>
+      <UserContext.Provider value={{ user, setUser }}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route
+              path="/login"
+              element={user ? <Navigate to="/events" replace /> : <Login onLogin={setUser} />}
+            />
+            <Route
+              path="/*"
+              element={user ? <DashboardLayout changeUser={setUser} /> : <Navigate to="/login" replace />}
+            />
+          </Routes>
+        </BrowserRouter>
+      </UserContext.Provider>
+    </ThemeProvider>
   );
 }

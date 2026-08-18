@@ -1,15 +1,16 @@
 import Badge from "./Badge.jsx";
 import { PLATFORM_ICONS, PLATFORM_COLORS, EVENT_COLORS, timeAgo } from "../constants.jsx";
+import { GitBranch, Clock } from "lucide-react";
 
 export default function EventRow({ event, onClick, selected }) {
   const provider = event.provider || event.platform || "github";
   const type = event.type || event.eventType || "unknown";
   const repo = event.repositoryId?.name || event.repository?.name || event.repo || "unknown-repo";
   const actor = event.senderId?.name || event.sender?.username || event.actor || "unknown";
-  const timestamp = event.eventTimestamp || event.ts || event.timestamp || event.createdAt || Date.now();
+  const timestamp = event.eventTimestamp || event.ts || event.timestamp || event.createdAt || 0;
   const typeLabel = String(type).replace("_", " ");
-  const typeColor = EVENT_COLORS[type] || "#64748b";
-  const providerColor = PLATFORM_COLORS[provider] || "#94a3b8";
+  const typeColor = EVENT_COLORS[type] || "var(--primary)";
+  const providerColor = PLATFORM_COLORS[provider] || "var(--text-secondary)";
   const providerIcon = PLATFORM_ICONS[provider] || null;
 
   return (
@@ -20,49 +21,109 @@ export default function EventRow({ event, onClick, selected }) {
         gridTemplateColumns: "36px 1fr auto",
         gap: 12,
         alignItems: "center",
-        padding: "12px 16px",
-        borderBottom: "1px solid #0f1117",
+        padding: "13px 18px",
+        borderBottom: "1px solid var(--border-base)",
         cursor: "pointer",
-        background: selected ? "#1a2035" : "transparent",
-        borderLeft: selected ? "2px solid #3b82f6" : "2px solid transparent",
-        transition: "all 0.15s ease",
+        background: selected ? "var(--primary-light)" : "transparent",
+        borderLeft: selected ? "3px solid var(--primary)" : "3px solid transparent",
+        transition: "background 0.15s, border-color 0.15s",
       }}
-      onMouseEnter={e => { if (!selected) e.currentTarget.style.background = "#0f1117"; }}
-      onMouseLeave={e => { if (!selected) e.currentTarget.style.background = "transparent"; }}
+      onMouseEnter={(e) => {
+        if (!selected) e.currentTarget.style.background = "var(--bg-hover)";
+      }}
+      onMouseLeave={(e) => {
+        if (!selected) e.currentTarget.style.background = "transparent";
+      }}
     >
       {/* Platform icon */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-        <div style={{ color: providerColor }}>
-          {providerIcon}
-        </div>
+      <div
+        style={{
+          width: 32,
+          height: 32,
+          borderRadius: 8,
+          background: "var(--bg-card-subtle)",
+          border: "1px solid var(--border-base)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: providerColor,
+          flexShrink: 0,
+        }}
+      >
+        {providerIcon}
       </div>
 
-      {/* Event content */}
+      {/* Event Details */}
       <div style={{ minWidth: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 3, flexWrap: "wrap" }}>
-          <Badge
-            label={typeLabel}
-            color={typeColor}
-          />
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 4 }}>
+          <Badge label={typeLabel} color={typeColor} />
 
-          <span style={{ fontSize: 12, color: "#64748b", fontFamily: "monospace" }}>
+          <span
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              color: "var(--text-primary)",
+              fontFamily: "'JetBrains Mono', monospace",
+            }}
+          >
             {repo}
           </span>
 
           {event.branch && (
-            <span style={{ fontSize: 11, color: "#334155", fontFamily: "monospace" }}>
-              /{event.branch}
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 3,
+                fontSize: 11,
+                color: "var(--text-muted)",
+                background: "var(--bg-card-subtle)",
+                border: "1px solid var(--border-base)",
+                padding: "1px 6px",
+                borderRadius: 4,
+                fontFamily: "'JetBrains Mono', monospace",
+              }}
+            >
+              <GitBranch size={10} />
+              {event.branch}
             </span>
           )}
         </div>
 
-        <div style={{ fontSize: 11, color: "#475569", marginTop: 3 }}>
-          by <span style={{ color: "#64748b" }}>{actor}</span>
+        <div style={{ fontSize: 11, color: "var(--text-secondary)", display: "flex", alignItems: "center", gap: 4 }}>
+          by <strong style={{ color: "var(--text-primary)", fontWeight: 600 }}>{actor}</strong>
+          {event.message && (
+            <span
+              style={{
+                color: "var(--text-muted)",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                maxWidth: 240,
+                display: "inline-block",
+                verticalAlign: "bottom",
+                marginLeft: 4,
+              }}
+            >
+              — {event.message}
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Time */}
-      <div style={{ fontSize: 11, color: "#334155", whiteSpace: "nowrap", fontFamily: "monospace" }}>
+      {/* Timestamp */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 4,
+          fontSize: 11,
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+          fontFamily: "'JetBrains Mono', monospace",
+        }}
+      >
+        <Clock size={11} />
         {timeAgo(timestamp)}
       </div>
     </div>

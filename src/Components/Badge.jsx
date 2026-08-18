@@ -1,11 +1,33 @@
-export default function Badge({ label, color }) {
+export default function Badge({ label, color = "var(--primary)" }) {
+  const isCustomColor = color && !color.startsWith("var(");
   return (
-    <span style={{
-      display: "inline-flex", alignItems: "center", gap: 4,
-      background: `${color}18`, color, border: `1px solid ${color}40`,
-      borderRadius: 4, padding: "2px 8px", fontSize: 11, fontWeight: 600,
-      textTransform: "uppercase", letterSpacing: "0.5px", whiteSpace: "nowrap"
-    }}>
+    <span
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 5,
+        background: isCustomColor ? `${color}14` : "var(--primary-light)",
+        color: color,
+        border: `1px solid ${isCustomColor ? `${color}33` : "var(--primary-border)"}`,
+        borderRadius: 6,
+        padding: "2px 8px",
+        fontSize: 11,
+        fontWeight: 600,
+        fontFamily: "'JetBrains Mono', monospace",
+        textTransform: "uppercase",
+        letterSpacing: "0.4px",
+        whiteSpace: "nowrap",
+      }}
+    >
+      <span
+        style={{
+          width: 5,
+          height: 5,
+          borderRadius: "50%",
+          background: color,
+          display: "inline-block",
+        }}
+      />
       {label}
     </span>
   );

@@ -1,8 +1,21 @@
 import { useState, useContext, useEffect } from "react";
 import Avatar from "./Avatar.jsx";
 import { UserContext } from "../context/UserContext";
+import {
+  X,
+  Copy,
+  Check,
+  Eye,
+  KeyRound,
+  ShieldCheck,
+  AlertTriangle,
+  Loader2,
+  Radio,
+  ExternalLink,
+  Lock,
+} from "lucide-react";
 
-// Key Overlay Component
+// Key Overlay Modal
 function KeyOverlay({ platform, apiKey, onClose }) {
   const [copied, setCopied] = useState(false);
 
@@ -18,137 +31,121 @@ function KeyOverlay({ platform, apiKey, onClose }) {
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(0,0,0,0.7)",
-        backdropFilter: "blur(4px)",
+        background: "rgba(15, 23, 42, 0.6)",
+        backdropFilter: "blur(6px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 1000,
+        zIndex: 1100,
+        padding: 16,
       }}
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
-          background: "#0f1521",
-          border: "1px solid #1e2330",
-          borderRadius: 14,
-          padding: 28,
-          width: "90vw",        // 👈 force mobile-friendly width
-          maxWidth: "380px",    // 👈 keep desktop limit
-          marginLeft: "0px",    // 👈 remove side shifts
-          marginRight: "0px",
-          boxShadow: "0 25px 60px rgba(0,0,0,0.6)",
+          background: "var(--bg-card)",
+          border: "1px solid var(--border-base)",
+          borderRadius: 16,
+          padding: 24,
+          width: "100%",
+          maxWidth: 420,
+          boxShadow: "var(--shadow-xl)",
+          animation: "fadeIn 0.2s ease-out forwards",
         }}
       >
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 20,
-          }}
-        >
-          <div style={{ fontSize: 13, fontWeight: 700, color: "#e2e8f0" }}>
-            {platform} API Key
-          </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
+            {platform} Webhook Secret / API Key
+          </h3>
           <button
             onClick={onClose}
             style={{
-              background: "#1e2330",
-              border: "none",
-              color: "#94a3b8",
+              background: "var(--bg-card-subtle)",
+              border: "1px solid var(--border-base)",
+              color: "var(--text-secondary)",
               cursor: "pointer",
-              fontSize: 16,
               width: 28,
               height: 28,
               borderRadius: 6,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              lineHeight: 1,
             }}
           >
-            ×
+            <X size={15} />
           </button>
         </div>
 
-        {/* Warning */}
         <div
           style={{
-            background: "#1a1200",
-            border: "1px solid #3d2e00",
+            background: "var(--warning-light)",
+            border: "1px solid var(--warning-border)",
             borderRadius: 8,
             padding: "8px 12px",
-            marginBottom: 16,
-            fontSize: 11,
-            color: "#f59e0b",
+            marginBottom: 14,
+            fontSize: 12,
+            color: "var(--warning)",
             display: "flex",
-            gap: 6,
+            gap: 8,
             alignItems: "center",
           }}
         >
-          <span>⚠</span> Keep this key secret. Do not share it publicly.
+          <AlertTriangle size={15} style={{ flexShrink: 0 }} />
+          <span>Keep this token confidential. It authenticates webhook payloads.</span>
         </div>
 
-        {/* Key display */}
         <div
           style={{
-            background: "#070a0f",
-            border: "1px solid #1e2330",
+            background: "var(--bg-input)",
+            border: "1px solid var(--border-base)",
             borderRadius: 8,
             padding: "12px 14px",
-            fontFamily: "monospace",
+            fontFamily: "'JetBrains Mono', monospace",
             fontSize: 12,
-            color: "#7dd3fc",
+            color: "var(--text-primary)",
             wordBreak: "break-all",
-            letterSpacing: "0.5px",
             marginBottom: 16,
-            lineHeight: 1.6,
+            lineHeight: 1.5,
           }}
         >
           {apiKey || "••••••••••••••••••••••••••••••••"}
         </div>
 
-        {/* Actions */}
-        <div style={{ display: "flex", gap: 8 }}>
-          <button
-            onClick={handleCopy}
-            style={{
-              flex: 1,
-              padding: "10px",
-              borderRadius: 8,
-              background: copied ? "#10b98122" : "#3b82f6",
-              border: copied ? "1px solid #10b981" : "1px solid transparent",
-              color: copied ? "#10b981" : "#fff",
-              fontWeight: 700,
-              fontSize: 12,
-              cursor: "pointer",
-              transition: "all 0.2s",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 6,
-            }}
-          >
-            {copied ? "✓ Copied!" : "⎘ Copy Key"}
-          </button>
-
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
           <button
             onClick={onClose}
             style={{
-              padding: "10px 16px",
+              padding: "9px 14px",
               borderRadius: 8,
               background: "transparent",
-              border: "1px solid #1e2330",
-              color: "#64748b",
+              border: "1px solid var(--border-base)",
+              color: "var(--text-secondary)",
               fontWeight: 600,
               fontSize: 12,
               cursor: "pointer",
             }}
           >
             Close
+          </button>
+          <button
+            onClick={handleCopy}
+            style={{
+              padding: "9px 16px",
+              borderRadius: 8,
+              background: copied ? "var(--success-light)" : "var(--primary)",
+              border: copied ? "1px solid var(--success-border)" : "none",
+              color: copied ? "var(--success)" : "#ffffff",
+              fontWeight: 700,
+              fontSize: 12,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            {copied ? <Check size={14} /> : <Copy size={14} />}
+            <span>{copied ? "Copied" : "Copy Token"}</span>
           </button>
         </div>
       </div>
@@ -162,50 +159,60 @@ export default function ProfilePanel({ onClose }) {
   const hasPassword = Boolean(user?.password);
 
   const [providers, setProviders] = useState({});
-  const [channel, setChannel] = useState(providers.slackChannel || "");
-  const [token, setToken] = useState(providers.slackURL || "");
+  const [channel, setChannel] = useState("");
+  const [token, setToken] = useState("");
   const [saveError, setSaveError] = useState(null);
-  const [keyOverlay, setKeyOverlay] = useState(null); // { platform, key }
+  const [keyOverlay, setKeyOverlay] = useState(null);
   const [newPwd, setNewPwd] = useState("");
   const [confirmNewPwd, setConfirmNewPwd] = useState("");
   const [pwdLoading, setPwdLoading] = useState(false);
   const [pwdError, setPwdError] = useState(null);
   const [pwdSaved, setPwdSaved] = useState(false);
 
-  const handleSave = async () => {
-    setSaveError(null);
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        const res = await fetch(`${window.__ENV__.VITE_API_URL}/auth/providers/${user._id}`, {
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.success) {
+          setProviders(data.providers || {});
+          setChannel(data.providers.slackChannel || "");
+          setToken(data.providers.slackURL || "");
+        }
+      } catch (err) {
+        console.error("Failed to fetch provider connections", err);
+      }
+    };
+    if (user?._id) fetchProviders();
+  }, [user]);
 
+  const handleSaveSlack = async () => {
+    setSaveError(null);
     const hasChannel = channel.trim() !== "";
     const hasToken = token.trim() !== "";
     if (hasChannel !== hasToken) {
-      setSaveError(
-        "Both Slack Channel and Slack Token must be provided together, or both left empty.",
-      );
+      setSaveError("Both Slack Channel and Slack Token must be provided together, or both left empty.");
       return;
     }
+
     try {
-      const res = await fetch(
-        `${window.__ENV__.VITE_API_URL}/user/updateConfig/${user._id}`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ slackChannel: channel, slackToken: token }),
-        },
-      );
+      const res = await fetch(`${window.__ENV__.VITE_API_URL}/user/updateConfig/${user._id}`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slackChannel: channel, slackToken: token }),
+      });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        setSaveError(
-          data.message || "Failed to save configuration. Please try again.",
-        );
+        setSaveError(data.message || "Failed to save Slack configuration.");
         return;
       }
       setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
-      setSaveError(
-        "Network error. Please check your connection and try again.",
-      );
+      setTimeout(() => setSaved(false), 2500);
+    } catch {
+      setSaveError("Network error while saving settings.");
     }
   };
 
@@ -213,14 +220,10 @@ export default function ProfilePanel({ onClose }) {
     window.location.href = `${window.__ENV__.VITE_API_URL}/auth/${provider}`;
   };
 
-  const handleShowKey = (name, key) => {
-    setKeyOverlay({ platform: name, key });
-  };
-
   const handleChangePassword = async () => {
     setPwdError(null);
     if (!newPwd || !confirmNewPwd) {
-      setPwdError("All fields are required.");
+      setPwdError("All password fields are required.");
       return;
     }
     if (newPwd !== confirmNewPwd) {
@@ -228,7 +231,7 @@ export default function ProfilePanel({ onClose }) {
       return;
     }
     if (newPwd.length < 8 || !/[A-Z]/.test(newPwd) || !/[a-z]/.test(newPwd) || !/\d/.test(newPwd)) {
-      setPwdError("Password must be ≥8 chars and include upper, lower and a number.");
+      setPwdError("Password must be ≥8 chars with uppercase, lowercase, and a number.");
       return;
     }
 
@@ -248,117 +251,81 @@ export default function ProfilePanel({ onClose }) {
       setPwdSaved(true);
       setNewPwd("");
       setConfirmNewPwd("");
-      setTimeout(() => setPwdSaved(false), 2200);
-    } catch (err) {
+      setTimeout(() => setPwdSaved(false), 2500);
+    } catch {
       setPwdError("Network error. Please try again.");
     } finally {
       setPwdLoading(false);
     }
   };
 
-  useEffect(() => {
-    const fetchProviders = async () => {
-      const res = await fetch(
-        `${window.__ENV__.VITE_API_URL}/auth/providers/${user._id}`,
-        {
-          credentials: "include",
-        },
-      );
-
-      const data = await res.json();
-
-      if (data.success) {
-        setProviders(data.providers);
-        setChannel(data.providers.slackChannel || "");
-        setToken(data.providers.slackURL || "");
-      }
-    };
-
-    fetchProviders();
-  }, []);
-
   const inputStyle = {
     width: "100%",
     boxSizing: "border-box",
     padding: "10px 12px",
-    background: "#0a0d12",
-    border: "1px solid #1e2330",
-    borderRadius: 7,
-    color: "#e2e8f0",
+    background: "var(--bg-input)",
+    border: "1px solid var(--border-base)",
+    borderRadius: 8,
+    color: "var(--text-primary)",
     fontSize: 13,
-    fontFamily: "monospace",
+    fontFamily: "'JetBrains Mono', monospace",
     outline: "none",
   };
 
-  const platformRow = (name, connected, apiKey) => (
+  const platformItem = (name, connected, apiKey) => (
     <div
       key={name}
       style={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "10px 12px",
-        background: "#0a0d12",
-        borderRadius: 8,
-        border: "1px solid #1e2330",
+        padding: "11px 14px",
+        background: "var(--bg-card-subtle)",
+        borderRadius: 10,
+        border: "1px solid var(--border-base)",
         marginBottom: 8,
       }}
     >
-      <div style={{ fontSize: 13, color: "#e2e8f0", fontWeight: 600 }}>
-        {name}
-      </div>
+      <div style={{ fontSize: 13, color: "var(--text-primary)", fontWeight: 600 }}>{name}</div>
 
       {connected ? (
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ color: "#10b981", fontSize: 12 }}>✓ Connected</span>
+          <span style={{ color: "var(--success)", fontSize: 12, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+            <Check size={14} /> Connected
+          </span>
           <button
-            onClick={() => handleShowKey(name, apiKey)}
-            title="View API Key"
+            onClick={() => setKeyOverlay({ platform: name, key: apiKey })}
+            title="Inspect API Key"
             style={{
-              background: "#1e2330",
-              border: "1px solid #2d3748",
-              color: "#94a3b8",
-              fontSize: 12,
-              padding: "5px 10px",
+              background: "var(--bg-card)",
+              border: "1px solid var(--border-base)",
+              color: "var(--text-secondary)",
+              fontSize: 11,
+              padding: "4px 8px",
               borderRadius: 6,
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
-              gap: 5,
+              gap: 4,
               fontWeight: 600,
-              transition: "background 0.15s",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#2d3748")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#1e2330")}
           >
-            {/* Eye icon SVG */}
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            See Key
+            <Eye size={12} />
+            <span>Key</span>
           </button>
         </div>
       ) : (
         <button
           onClick={() => connectPlatform(name.toLowerCase())}
           style={{
-            background: "#3b82f6",
+            background: "var(--primary)",
             border: "none",
-            color: "#fff",
+            color: "#ffffff",
             fontSize: 12,
-            padding: "6px 10px",
+            padding: "5px 12px",
             borderRadius: 6,
             cursor: "pointer",
+            fontWeight: 600,
           }}
         >
           Connect
@@ -369,7 +336,6 @@ export default function ProfilePanel({ onClose }) {
 
   return (
     <>
-      {/* Key Overlay */}
       {keyOverlay && (
         <KeyOverlay
           platform={keyOverlay.platform}
@@ -378,242 +344,217 @@ export default function ProfilePanel({ onClose }) {
         />
       )}
 
-      <div style={{ height: "100vh", display: "flex", flexDirection: "column", marginLeft: "50px", marginRight: "-50px" }}>
+      {/* Backdrop */}
+      <div
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(15, 23, 42, 0.4)",
+          backdropFilter: "blur(4px)",
+          zIndex: 80,
+        }}
+        onClick={onClose}
+      />
+
+      {/* Slide-over Drawer */}
+      <aside
+        style={{
+          position: "fixed",
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: "100%",
+          maxWidth: 420,
+          background: "var(--bg-card)",
+          borderLeft: "1px solid var(--border-base)",
+          zIndex: 90,
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: "var(--shadow-xl)",
+          animation: "fadeIn 0.25s ease-out forwards",
+        }}
+      >
+        {/* Drawer Header */}
         <div
           style={{
-            padding: "20px 20px 0",
+            padding: "18px 24px",
+            borderBottom: "1px solid var(--border-base)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            position: "sticky",
-            top: 0,
-            zIndex: 6,
-            background: "linear-gradient(180deg, rgba(10,13,18,0.98), rgba(10,13,18,0.9))",
-            backdropFilter: "blur(6px)",
+            background: "var(--bg-header)",
           }}
         >
-          <div
-            style={{
-              fontSize: 14,
-              fontWeight: 700,
-              color: "#e2e8f0",
-              letterSpacing: "0.5px",
-            }}
-          >
+          <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)" }}>
             Profile & Settings
           </div>
-
           <button
             onClick={onClose}
             style={{
-              background: "none",
-              border: "none",
-              color: "#475569",
+              background: "var(--bg-card-subtle)",
+              border: "1px solid var(--border-base)",
+              color: "var(--text-secondary)",
               cursor: "pointer",
-              fontSize: 20,
+              width: 28,
+              height: 28,
+              borderRadius: 6,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            ×
+            <X size={15} />
           </button>
         </div>
 
-        <div style={{ padding: 20, flex: 1, overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
-          {/* User card */}
+        {/* Drawer Body */}
+        <div style={{ padding: "22px 24px", flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 24 }}>
+          {/* User Information Card */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
               gap: 14,
-              marginBottom: 24,
               padding: 16,
-              background: "#0a0d12",
-              borderRadius: 10,
-              border: "1px solid #1e2330",
+              background: "var(--bg-card-subtle)",
+              borderRadius: 12,
+              border: "1px solid var(--border-base)",
             }}
           >
-            <Avatar avatarURL={user.avatarUrl} color="#3b82f6" size={44} />
-
-            <div>
-              <div style={{ fontSize: 15, fontWeight: 700, color: "#f1f5f9" }}>
-                {user.name}
+            <Avatar avatarURL={user?.avatarUrl} name={user?.name || user?.email} size={46} />
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {user?.name || "Pipeline Developer"}
               </div>
-              <div style={{ fontSize: 12, color: "#64748b" }}>{user.email}</div>
+              <div style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "'JetBrains Mono', monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {user?.email}
+              </div>
             </div>
           </div>
 
-          {/* Platform connections */}
-          <div style={{ marginBottom: 24 }}>
-            <div
-              style={{
-                fontSize: 11,
-                color: "#64748b",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-                fontWeight: 700,
-                marginBottom: 12,
-              }}
-            >
-              Connected Platforms
+          {/* Connected VCS Integrations */}
+          <div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.8px", fontWeight: 700, marginBottom: 10 }}>
+              Connected VCS Platforms
+            </div>
+            {platformItem("GitHub", providers?.github, providers?.githubkey)}
+            {platformItem("GitLab", providers?.gitlab, providers?.gitlabkey)}
+            {platformItem("Bitbucket", providers?.bitbucket, providers?.bitbucketkey)}
+          </div>
+
+          {/* Slack Configuration */}
+          <div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.8px", fontWeight: 700, marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+              <Radio size={13} color="var(--primary)" />
+              Slack Notifications Config
             </div>
 
-            {platformRow("GitHub", providers?.github, providers?.githubkey)}
-            {platformRow("GitLab", providers?.gitlab, providers?.gitlabkey)}
-            {platformRow(
-              "Bitbucket",
-              providers?.bitbucket,
-              providers?.bitbucketkey,
+            <div style={{ marginBottom: 12 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", display: "block", marginBottom: 4 }}>
+                Slack Channel Name
+              </label>
+              <input
+                value={channel}
+                onChange={(e) => setChannel(e.target.value)}
+                placeholder="#pipeline-alerts"
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}>
+                  Slack Bot / Webhook Token
+                </label>
+                <a
+                  href="https://api.slack.com/apps"
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ fontSize: 11, color: "var(--primary)", display: "inline-flex", alignItems: "center", gap: 2, textDecoration: "none" }}
+                >
+                  Need help? <ExternalLink size={10} />
+                </a>
+              </div>
+              <input
+                type="password"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                placeholder="xoxb-..."
+                style={inputStyle}
+              />
+            </div>
+
+            {saveError && (
+              <div style={{ padding: "9px 12px", borderRadius: 8, background: "var(--danger-light)", border: "1px solid var(--danger-border)", color: "var(--danger)", fontSize: 12, marginBottom: 10 }}>
+                {saveError}
+              </div>
             )}
-          </div>
 
-          {/* Slack config */}
-          <div style={{ marginBottom: 20 }}>
-            <div
+            <button
+              onClick={handleSaveSlack}
               style={{
-                fontSize: 11,
-                color: "#64748b",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
+                width: "100%",
+                padding: "10px",
+                borderRadius: 8,
+                background: saved ? "var(--success-light)" : "var(--primary)",
+                border: saved ? "1px solid var(--success-border)" : "none",
+                color: saved ? "var(--success)" : "#ffffff",
                 fontWeight: 700,
-                marginBottom: 12,
+                fontSize: 13,
+                cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "center",
                 gap: 6,
               }}
             >
-              <span style={{ color: "#36c5f0" }}>⬡</span> Slack Configuration
-            </div>
-
-            <label
-              style={{
-                fontSize: 12,
-                color: "#475569",
-                display: "block",
-                marginBottom: 5,
-              }}
-            >
-              Channel Name
-            </label>
-
-            <input
-              value={channel}
-              onChange={(e) => setChannel(e.target.value)}
-              placeholder="#your-channel"
-              style={{ ...inputStyle, marginBottom: 12 }}
-            />
-
-            <label
-              style={{
-                fontSize: 12,
-                color: "#475569",
-                display: "block",
-                marginBottom: 5,
-              }}
-            >
-              Slack Token{" "}
-              <a
-                target="_blank"
-                href="https://api.slack.com/apps"
-                style={{ color: "blue" }}
-              >
-                need help?
-              </a>
-            </label>
-
-            <input
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              placeholder="xoxb-..."
-              style={inputStyle}
-            />
-            {!channel.trim() && !token.trim() && (
-              <div
-                style={{
-                  fontSize: 11,
-                  color: "#f59e0b",
-                  marginTop: 6,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 4,
-                }}
-              >
-                <span>⚠</span> You will not be notified on any Slack channel.
-              </div>
-            )}
-            <div style={{ fontSize: 11, color: "#334155", marginTop: 6 }}>
-              Notifications will be sent to your configured Slack channel only.
-            </div>
+              {saved ? <Check size={15} /> : null}
+              <span>{saved ? "Configuration Saved" : "Save Slack Config"}</span>
+            </button>
           </div>
 
-          {/* Password upgrade */}
-          <div style={{ marginBottom: 20, marginTop: 8 }}>
-            <div
-              style={{
-                fontSize: 11,
-                color: "#64748b",
-                textTransform: "uppercase",
-                letterSpacing: "1px",
-                fontWeight: 700,
-                marginBottom: 12,
-              }}
-            >
-              {hasPassword ? "Change password" : "Set password"}
+          {/* Password Section */}
+          <div>
+            <div style={{ fontSize: 11, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.8px", fontWeight: 700, marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+              <Lock size={13} />
+              {hasPassword ? "Change Password" : "Set Password"}
             </div>
 
-            <label style={{ fontSize: 12, color: "#475569", display: "block", marginBottom: 6 }}>
-              New password
-            </label>
-            <input
-              type="password"
-              value={newPwd}
-              onChange={(e) => setNewPwd(e.target.value)}
-              placeholder="New password (min 8 chars)"
-              style={{ ...inputStyle, marginBottom: 10 }}
-            />
+            <div style={{ marginBottom: 10 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", display: "block", marginBottom: 4 }}>
+                New Password
+              </label>
+              <input
+                type="password"
+                value={newPwd}
+                onChange={(e) => setNewPwd(e.target.value)}
+                placeholder="Min 8 chars (uppercase + number)"
+                style={inputStyle}
+              />
+            </div>
 
-            <label style={{ fontSize: 12, color: "#475569", display: "block", marginBottom: 6 }}>
-              Confirm new password
-            </label>
-            <input
-              type="password"
-              value={confirmNewPwd}
-              onChange={(e) => setConfirmNewPwd(e.target.value)}
-              placeholder="Repeat new password"
-              style={{ ...inputStyle, marginBottom: 10 }}
-            />
+            <div style={{ marginBottom: 10 }}>
+              <label style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", display: "block", marginBottom: 4 }}>
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                value={confirmNewPwd}
+                onChange={(e) => setConfirmNewPwd(e.target.value)}
+                placeholder="Repeat password"
+                style={inputStyle}
+              />
+            </div>
 
             {pwdError && (
-              <div style={{
-                background: "#1a0a0a",
-                border: "1px solid #7f1d1d",
-                borderRadius: 8,
-                padding: "9px 12px",
-                marginBottom: 12,
-                fontSize: 12,
-                color: "#f87171",
-                display: "flex",
-                gap: 6,
-                alignItems: "flex-start",
-              }}>
-                <span style={{ flexShrink: 0 }}>⚠</span>
-                <span>{pwdError}</span>
+              <div style={{ padding: "9px 12px", borderRadius: 8, background: "var(--danger-light)", border: "1px solid var(--danger-border)", color: "var(--danger)", fontSize: 12, marginBottom: 10 }}>
+                {pwdError}
               </div>
             )}
 
             {pwdSaved && (
-              <div style={{
-                background: "#052e16",
-                border: "1px solid #064e3b",
-                borderRadius: 8,
-                padding: "9px 12px",
-                marginBottom: 12,
-                fontSize: 12,
-                color: "#86efac",
-                display: "flex",
-                gap: 6,
-                alignItems: "center",
-              }}>
-                ✓ Password {hasPassword ? "updated" : "set"}
+              <div style={{ padding: "9px 12px", borderRadius: 8, background: "var(--success-light)", border: "1px solid var(--success-border)", color: "var(--success)", fontSize: 12, marginBottom: 10 }}>
+                Password successfully updated.
               </div>
             )}
 
@@ -624,54 +565,24 @@ export default function ProfilePanel({ onClose }) {
                 width: "100%",
                 padding: "10px",
                 borderRadius: 8,
-                background: pwdSaved ? "#10b98122" : "#2563eb",
-                border: pwdSaved ? "1px solid #10b981" : "none",
-                color: pwdSaved ? "#10b981" : "#fff",
+                background: "var(--bg-card-subtle)",
+                border: "1px solid var(--border-base)",
+                color: "var(--text-primary)",
                 fontWeight: 700,
                 fontSize: 13,
                 cursor: pwdLoading ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 6,
               }}
             >
-              {pwdLoading ? (hasPassword ? "Updating…" : "Saving…") : pwdSaved ? "✓ Updated" : hasPassword ? "Change password" : "Set password"}
+              {pwdLoading && <Loader2 size={14} style={{ animation: "spin 0.8s linear infinite" }} />}
+              <span>{pwdLoading ? "Updating…" : hasPassword ? "Update Password" : "Set Password"}</span>
             </button>
           </div>
-          {saveError && (
-            <div
-              style={{
-                background: "#1a0a0a",
-                border: "1px solid #7f1d1d",
-                borderRadius: 8,
-                padding: "9px 12px",
-                marginBottom: 12,
-                fontSize: 12,
-                color: "#f87171",
-                display: "flex",
-                gap: 6,
-                alignItems: "flex-start",
-              }}
-            >
-              <span style={{ flexShrink: 0 }}>⚠</span>
-              <span>{saveError}</span>
-            </div>
-          )}
-          <button
-            onClick={handleSave}
-            style={{
-              width: "100%",
-              padding: "11px",
-              borderRadius: 8,
-              background: saved ? "#10b98122" : "#3b82f6",
-              border: saved ? "1px solid #10b981" : "none",
-              color: saved ? "#10b981" : "#fff",
-              fontWeight: 700,
-              fontSize: 13,
-              cursor: "pointer",
-            }}
-          >
-            {saved ? "✓ Saved" : "Save Configuration"}
-          </button>
         </div>
-      </div>
+      </aside>
     </>
   );
 }
