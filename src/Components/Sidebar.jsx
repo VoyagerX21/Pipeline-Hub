@@ -58,7 +58,7 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
           width: 38,
           height: 38,
           borderRadius: 10,
-          background: "linear-gradient(135deg, var(--primary), #6366f1)",
+          background: "#ffffff",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
