@@ -50,7 +50,8 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
       }}
     >
       {/* Brand Icon */}
-      <div
+      <img
+        src="./logo.png"
         onClick={() => navigate("/events")}
         title="PipelineHub"
         style={{
@@ -68,9 +69,7 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
           cursor: "pointer",
           marginBottom: 12,
         }}
-      >
-        P
-      </div>
+      />
 
       {/* User Profile Trigger */}
       <button
