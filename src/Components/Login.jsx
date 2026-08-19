@@ -124,20 +124,47 @@ export default function Login({ onLogin }) {
     window.location.href = `${window.__ENV__.VITE_API_URL}/auth/${platform}`;
   };
 
+  const oauthProviders = [
+    { key: "github", label: "GitHub" },
+    { key: "gitlab", label: "GitLab" },
+    { key: "bitbucket", label: "Bitbucket" },
+  ];
+
   return (
     <div
       style={{
         minHeight: "100vh",
         background: "var(--bg-app)",
         display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "24px 16px",
         position: "relative",
-        overflow: "hidden",
       }}
     >
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes drift {
+          0%   { transform: translate(0, 0) scale(1); }
+          50%  { transform: translate(-3%, 2%) scale(1.06); }
+          100% { transform: translate(0, 0) scale(1); }
+        }
+        .ph-input:focus {
+          border-color: var(--primary) !important;
+          box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+        }
+        .ph-oauth-row:hover {
+          background: var(--bg-hover) !important;
+          border-color: var(--border-strong) !important;
+        }
+        @media (max-width: 860px) {
+          .ph-visual-panel { display: none !important; }
+        }
+      `}</style>
+
       {/* Floating Theme Switcher */}
       <button
         onClick={toggleTheme}
@@ -163,84 +190,134 @@ export default function Login({ onLogin }) {
         {theme === "light" ? <Moon size={18} /> : <Sun size={18} />}
       </button>
 
-      {/* Ambient background decoration */}
+      {/* Left Visual Panel */}
       <div
+        className="ph-visual-panel"
         style={{
-          position: "absolute",
-          top: "10%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: 600,
-          height: 400,
-          background: "radial-gradient(ellipse, rgba(37,99,235,0.07) 0%, transparent 70%)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
-
-      {/* Main Container */}
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 440,
+          flex: "0 0 50%",
           position: "relative",
-          zIndex: 1,
-          animation: "fadeIn 0.3s ease-out forwards",
+          overflow: "hidden",
+          background:
+            "radial-gradient(120% 120% at 20% 15%, #1e3a8a 0%, #0f172a 45%, #020617 100%)",
         }}
       >
-        {/* Brand Header */}
-        <div style={{ textAlign: "center", marginBottom: 28 }}>
-          <div
-            style={{
-              width: 48,
-              height: 48,
-              borderRadius: 14,
-              background: "linear-gradient(135deg, var(--primary), #6366f1)",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#ffffff",
-              fontWeight: 900,
-              fontSize: 22,
-              marginBottom: 16,
-              boxShadow: "0 8px 20px rgba(37,99,235,0.25)",
-            }}
-          >
-            P
-          </div>
-          <h1
-            style={{
-              fontSize: 24,
-              fontWeight: 800,
-              color: "var(--text-primary)",
-              letterSpacing: "-0.5px",
-              marginBottom: 6,
-            }}
-          >
-            {mode === "login" ? "Welcome to PipelineHub" : "Create Developer Account"}
-          </h1>
-          <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.5 }}>
-            {mode === "login"
-              ? "Unified VCS webhooks, automation & event intelligence"
-              : "Start streaming events across GitHub, GitLab, and Bitbucket"}
-          </p>
-        </div>
-
-        {/* Card Surface */}
+        {/* Ambient signal mesh */}
         <div
           style={{
-            background: "var(--bg-card)",
-            border: "1px solid var(--border-base)",
-            borderRadius: 16,
-            padding: "32px 28px",
-            boxShadow: "var(--shadow-lg)",
+            position: "absolute",
+            inset: "-10%",
+            background:
+              "radial-gradient(circle at 30% 25%, rgba(59,130,246,0.55) 0%, transparent 45%), radial-gradient(circle at 75% 60%, rgba(99,102,241,0.45) 0%, transparent 50%), radial-gradient(circle at 50% 90%, rgba(16,185,129,0.25) 0%, transparent 45%)",
+            filter: "blur(30px)",
+            animation: "drift 14s ease-in-out infinite",
+          }}
+        />
+        {/* Fine dot-grid overlay for a "signal" texture */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage:
+              "radial-gradient(rgba(255,255,255,0.14) 1px, transparent 1px)",
+            backgroundSize: "16px 16px",
+            mixBlendMode: "overlay",
+          }}
+        />
+ 
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            padding: 36,
           }}
         >
+          {/* Brand mark */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <img
+              style={{
+                width: 50,
+                height: 50,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 900,
+                fontSize: 17
+              }}
+              src="./logo.png"
+            />
+            <span style={{ color: "#ffffff", fontWeight: 800, fontSize: 16, letterSpacing: "-0.3px" }}>
+              PipelineHub
+            </span>
+          </div>
+ 
+          {/* Headline */}
+          <div>
+            <h2
+              style={{
+                color: "#ffffff",
+                fontSize: 34,
+                fontWeight: 800,
+                lineHeight: 1.15,
+                letterSpacing: "-0.8px",
+                marginBottom: 14,
+                maxWidth: 380,
+              }}
+            >
+              Code Changes. Events Flow. Pipelines Run.
+            </h2>
+            <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 14, lineHeight: 1.6, maxWidth: 340 }}>
+              Unified VCS webhooks, automation & event intelligence across GitHub, GitLab, and Bitbucket.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Form Panel */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "24px 16px",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 400,
+            animation: "fadeIn 0.3s ease-out forwards",
+          }}
+        >
+          {/* Header */}
+          <div style={{ marginBottom: 26 }}>
+            <h1
+              style={{
+                fontSize: 26,
+                fontWeight: 800,
+                color: "var(--text-primary)",
+                letterSpacing: "-0.5px",
+                marginBottom: 6,
+              }}
+            >
+              {mode === "login" ? "Sign in" : "Create your account"}
+            </h1>
+            <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.5 }}>
+              {mode === "login"
+                ? "Welcome back to PipelineHub."
+                : "Start streaming events in minutes."}
+            </p>
+          </div>
+
           {/* Feedback alert */}
           {feedback && (
             <div
               style={{
-                marginBottom: 20,
+                marginBottom: 18,
                 padding: "12px 14px",
                 borderRadius: 10,
                 background: feedbackType === "success" ? "var(--success-light)" : "var(--danger-light)",
@@ -261,49 +338,40 @@ export default function Login({ onLogin }) {
             </div>
           )}
 
-          {/* OAuth Buttons */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 22 }}>
-            {[
-              { key: "github", label: "GitHub" },
-              { key: "gitlab", label: "GitLab" },
-              { key: "bitbucket", label: "Bitbucket" },
-            ].map(({ key, label }) => (
+          {/* OAuth Buttons — stacked, full width */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+            {oauthProviders.map(({ key, label }) => (
               <button
                 key={key}
                 type="button"
+                className="ph-oauth-row"
                 onClick={() => handleOAuth(key)}
                 title={`Continue with ${label}`}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 8,
-                  padding: "10px 0",
+                  gap: 10,
+                  width: "100%",
+                  padding: "12px 0",
                   background: "var(--bg-card-subtle)",
                   border: "1px solid var(--border-base)",
                   borderRadius: 10,
                   color: "var(--text-primary)",
                   cursor: "pointer",
-                  fontSize: 13,
+                  fontSize: 13.5,
                   fontWeight: 600,
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "var(--bg-hover)";
-                  e.currentTarget.style.borderColor = "var(--border-strong)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "var(--bg-card-subtle)";
-                  e.currentTarget.style.borderColor = "var(--border-base)";
+                  transition: "background 0.15s ease, border-color 0.15s ease",
                 }}
               >
                 {PLATFORM_ICONS[key]}
-                <span>{label}</span>
+                <span>Continue with {label}</span>
               </button>
             ))}
           </div>
 
           {/* Divider */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
             <div style={{ flex: 1, height: 1, background: "var(--border-base)" }} />
             <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.5px" }}>
               OR WITH EMAIL
@@ -312,7 +380,7 @@ export default function Login({ onLogin }) {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {mode === "register" && (
               <div>
                 <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
@@ -322,6 +390,7 @@ export default function Login({ onLogin }) {
                   <User size={16} color="var(--text-muted)" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
                   <input
                     type="text"
+                    className="ph-input"
                     placeholder="Alex Morgan"
                     value={form.name}
                     onChange={handleChange("name")}
@@ -334,6 +403,8 @@ export default function Login({ onLogin }) {
                       color: "var(--text-primary)",
                       fontSize: 13,
                       outline: "none",
+                      boxSizing: "border-box",
+                      transition: "border-color 0.15s ease, box-shadow 0.15s ease",
                     }}
                   />
                 </div>
@@ -342,12 +413,13 @@ export default function Login({ onLogin }) {
 
             <div>
               <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", marginBottom: 6 }}>
-                Work Email
+                Email
               </label>
               <div style={{ position: "relative" }}>
                 <Mail size={16} color="var(--text-muted)" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
                 <input
                   type="email"
+                  className="ph-input"
                   placeholder="alex@company.com"
                   value={form.email}
                   onChange={handleChange("email")}
@@ -360,6 +432,8 @@ export default function Login({ onLogin }) {
                     color: "var(--text-primary)",
                     fontSize: 13,
                     outline: "none",
+                    boxSizing: "border-box",
+                    transition: "border-color 0.15s ease, box-shadow 0.15s ease",
                   }}
                 />
               </div>
@@ -396,6 +470,7 @@ export default function Login({ onLogin }) {
                 <Lock size={16} color="var(--text-muted)" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)" }} />
                 <input
                   type={showPass ? "text" : "password"}
+                  className="ph-input"
                   placeholder="••••••••••••"
                   value={form.password}
                   onChange={handleChange("password")}
@@ -409,6 +484,8 @@ export default function Login({ onLogin }) {
                     fontSize: 13,
                     fontFamily: "'JetBrains Mono', monospace",
                     outline: "none",
+                    boxSizing: "border-box",
+                    transition: "border-color 0.15s ease, box-shadow 0.15s ease",
                   }}
                 />
                 <button
@@ -488,67 +565,32 @@ export default function Login({ onLogin }) {
           </form>
 
           {/* Toggle Login/Register */}
-          <div style={{ marginTop: 22, textAlign: "center", fontSize: 13, color: "var(--text-secondary)" }}>
+          <div style={{ textAlign: "center", marginTop: 24, fontSize: 12, color: "#475569" }}>
             {mode === "login" ? (
               <>
-                Don't have an account?{" "}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMode("register");
-                    setError("");
-                  }}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "var(--primary)",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    padding: 0,
-                  }}
-                >
-                  Create one now
-                </button>
+                {"No account? "}
+                <span style={{ color: "#3b82f6", fontWeight: 600 }}>
+                  $ create-account --provider oauth ↑
+                </span>
               </>
             ) : (
               <>
-                Already registered?{" "}
+                {"Already initialized? "}
                 <button
-                  type="button"
-                  onClick={() => {
-                    setMode("login");
-                    setError("");
-                  }}
+                  className="toggle-mode"
+                  onClick={() => { setMode("login"); setError(""); setForm({ email: "", password: "", name: "" }); }}
                   style={{
-                    background: "none",
-                    border: "none",
-                    color: "var(--primary)",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    padding: 0,
+                    background: "none", border: "none",
+                    color: "#3b82f6", cursor: "pointer",
+                    fontSize: 12, fontWeight: 600, padding: 0,
+                    transition: "color 0.15s",
                   }}
                 >
-                  Sign in
+                  Sign in →
                 </button>
               </>
             )}
           </div>
-        </div>
-
-        {/* System operational badge */}
-        <div style={{ marginTop: 20, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <div
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: "50%",
-              background: "var(--success)",
-              boxShadow: "0 0 6px rgba(16, 185, 129, 0.5)",
-            }}
-          />
-          <span style={{ fontSize: 12, color: "var(--text-muted)", fontFamily: "'JetBrains Mono', monospace" }}>
-            All webhook endpoints active & verified
-          </span>
         </div>
       </div>
 
@@ -591,6 +633,7 @@ export default function Login({ onLogin }) {
             <form onSubmit={handleForgotSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               <input
                 type="email"
+                className="ph-input"
                 placeholder="alex@company.com"
                 value={forgotEmail}
                 onChange={(e) => setForgotEmail(e.target.value)}
@@ -603,6 +646,8 @@ export default function Login({ onLogin }) {
                   color: "var(--text-primary)",
                   fontSize: 13,
                   outline: "none",
+                  boxSizing: "border-box",
+                  transition: "border-color 0.15s ease, box-shadow 0.15s ease",
                 }}
               />
 
