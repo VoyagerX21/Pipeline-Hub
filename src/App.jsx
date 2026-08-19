@@ -96,7 +96,7 @@ function ResizableSplitPane({ left, right }) {
           position: "relative",
           cursor: "col-resize",
           background: isDragging ? "var(--primary)" : "transparent",
-          borderLeft: "1px solid var(--border-base)",
+          borderLeft: "1px solid var(--border-subtle)",
           transition: "background 0.15s",
           zIndex: 10,
         }}

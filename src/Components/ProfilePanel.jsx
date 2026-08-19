@@ -45,8 +45,7 @@ function KeyOverlay({ platform, apiKey, onClose }) {
         onClick={(e) => e.stopPropagation()}
         style={{
           background: "var(--bg-card)",
-          border: "1px solid var(--border-base)",
-          borderRadius: 16,
+          borderRadius: 12,
           padding: 24,
           width: "100%",
           maxWidth: 420,
@@ -62,7 +61,7 @@ function KeyOverlay({ platform, apiKey, onClose }) {
             onClick={onClose}
             style={{
               background: "var(--bg-card-subtle)",
-              border: "1px solid var(--border-base)",
+              border: "1px solid var(--border-subtle)",
               color: "var(--text-secondary)",
               cursor: "pointer",
               width: 28,
@@ -98,7 +97,7 @@ function KeyOverlay({ platform, apiKey, onClose }) {
         <div
           style={{
             background: "var(--bg-input)",
-            border: "1px solid var(--border-base)",
+            border: "1px solid var(--border-subtle)",
             borderRadius: 8,
             padding: "12px 14px",
             fontFamily: "'JetBrains Mono', monospace",
@@ -119,7 +118,7 @@ function KeyOverlay({ platform, apiKey, onClose }) {
               padding: "9px 14px",
               borderRadius: 8,
               background: "transparent",
-              border: "1px solid var(--border-base)",
+              border: "1px solid var(--border-subtle)",
               color: "var(--text-secondary)",
               fontWeight: 600,
               fontSize: 12,
@@ -264,8 +263,8 @@ export default function ProfilePanel({ onClose }) {
     boxSizing: "border-box",
     padding: "10px 12px",
     background: "var(--bg-input)",
-    border: "1px solid var(--border-base)",
-    borderRadius: 8,
+    border: "1px solid var(--border-subtle)",
+    borderRadius: 10,
     color: "var(--text-primary)",
     fontSize: 13,
     fontFamily: "'JetBrains Mono', monospace",
@@ -282,7 +281,6 @@ export default function ProfilePanel({ onClose }) {
         padding: "11px 14px",
         background: "var(--bg-card-subtle)",
         borderRadius: 10,
-        border: "1px solid var(--border-base)",
         marginBottom: 8,
       }}
     >
@@ -298,7 +296,7 @@ export default function ProfilePanel({ onClose }) {
             title="Inspect API Key"
             style={{
               background: "var(--bg-card)",
-              border: "1px solid var(--border-base)",
+              border: "1px solid var(--border-subtle)",
               color: "var(--text-secondary)",
               fontSize: 11,
               padding: "4px 8px",
@@ -366,7 +364,6 @@ export default function ProfilePanel({ onClose }) {
           width: "100%",
           maxWidth: 420,
           background: "var(--bg-card)",
-          borderLeft: "1px solid var(--border-base)",
           zIndex: 90,
           display: "flex",
           flexDirection: "column",
@@ -378,11 +375,10 @@ export default function ProfilePanel({ onClose }) {
         <div
           style={{
             padding: "18px 24px",
-            borderBottom: "1px solid var(--border-base)",
+            borderBottom: "1px solid var(--border-subtle)",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            background: "var(--bg-header)",
           }}
         >
           <div style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)" }}>
@@ -392,7 +388,7 @@ export default function ProfilePanel({ onClose }) {
             onClick={onClose}
             style={{
               background: "var(--bg-card-subtle)",
-              border: "1px solid var(--border-base)",
+              border: "1px solid var(--border-subtle)",
               color: "var(--text-secondary)",
               cursor: "pointer",
               width: 28,
@@ -417,8 +413,7 @@ export default function ProfilePanel({ onClose }) {
               gap: 14,
               padding: 16,
               background: "var(--bg-card-subtle)",
-              borderRadius: 12,
-              border: "1px solid var(--border-base)",
+              borderRadius: 10,
             }}
           >
             <Avatar avatarURL={user?.avatarUrl} name={user?.name || user?.email} size={46} />
@@ -566,7 +561,7 @@ export default function ProfilePanel({ onClose }) {
                 padding: "10px",
                 borderRadius: 8,
                 background: "var(--bg-card-subtle)",
-                border: "1px solid var(--border-base)",
+                border: "1px solid var(--border-subtle)",
                 color: "var(--text-primary)",
                 fontWeight: 700,
                 fontSize: 13,

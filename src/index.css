@@ -1,17 +1,17 @@
 :root,
 [data-theme="light"] {
-  --bg-app: #f8fafc;
+  --bg-app: #f9fafb;
   --bg-canvas: #ffffff;
   --bg-sidebar: #ffffff;
   --bg-header: #ffffff;
   --bg-card: #ffffff;
-  --bg-card-subtle: #f8fafc;
-  --bg-hover: #f1f5f9;
-  --bg-active: #e2e8f0;
-  --bg-input: #ffffff;
-  --border-subtle: #f1f5f9;
-  --border-base: #e2e8f0;
-  --border-strong: #cbd5e1;
+  --bg-card-subtle: #f9fafb;
+  --bg-hover: #f3f4f6;
+  --bg-active: #e5e7eb;
+  --bg-input: #f9fafb;
+  --border-subtle: #f3f4f6;
+  --border-base: #e5e7eb;
+  --border-strong: #d1d5db;
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
@@ -29,50 +29,50 @@
   --danger: #ef4444;
   --danger-light: #fef2f2;
   --danger-border: #fecaca;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.07), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
-  --scrollbar-thumb: #cbd5e1;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 4px 8px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 8px 16px -4px rgba(0, 0, 0, 0.06);
+  --scrollbar-thumb: #d1d5db;
   --scrollbar-track: transparent;
   color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --bg-app: #080b11;
-  --bg-canvas: #0a0d14;
-  --bg-sidebar: #0a0d14;
-  --bg-header: #0a0d14;
-  --bg-card: #0e131f;
-  --bg-card-subtle: #131926;
-  --bg-hover: #172033;
-  --bg-active: #1e293b;
-  --bg-input: #0a0d14;
-  --border-subtle: #131927;
-  --border-base: #1e293b;
-  --border-strong: #334155;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-faint: #334155;
+  --bg-app: #09090b;
+  --bg-canvas: #0f0f11;
+  --bg-sidebar: #09090b;
+  --bg-header: #09090b;
+  --bg-card: #111113;
+  --bg-card-subtle: #161618;
+  --bg-hover: #1a1a1e;
+  --bg-active: #222226;
+  --bg-input: #0d0d0f;
+  --border-subtle: #18181b;
+  --border-base: #222226;
+  --border-strong: #2e2e32;
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #52525b;
+  --text-faint: #2e2e32;
   --primary: #3b82f6;
   --primary-hover: #60a5fa;
-  --primary-light: #1e293b80;
-  --primary-border: #3b82f640;
+  --primary-light: #1e293b66;
+  --primary-border: #3b82f633;
   --success: #10b981;
-  --success-light: #064e3b30;
-  --success-border: #05966940;
+  --success-light: #064e3b22;
+  --success-border: #05966933;
   --warning: #f59e0b;
-  --warning-light: #78350f30;
-  --warning-border: #d9770640;
+  --warning-light: #78350f22;
+  --warning-border: #d9770633;
   --danger: #ef4444;
-  --danger-light: #7f1d1d30;
-  --danger-border: #dc262640;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
-  --scrollbar-thumb: #1e293b;
+  --danger-light: #7f1d1d22;
+  --danger-border: #dc262633;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 4px 8px -2px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 8px 16px -4px rgba(0, 0, 0, 0.4);
+  --scrollbar-thumb: #27272a;
   --scrollbar-track: transparent;
   color-scheme: dark;
 }
@@ -100,10 +100,9 @@ code, pre, kbd, samp, .font-mono {
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-/* Custom Sleek Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -119,7 +118,6 @@ code, pre, kbd, samp, .font-mono {
   background: var(--text-muted);
 }
 
-/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
@@ -134,7 +132,6 @@ code, pre, kbd, samp, .font-mono {
   to { transform: rotate(360deg); }
 }
 
-/* Transitions */
 button, a, input, select, textarea {
   transition: all 0.15s ease;
 }

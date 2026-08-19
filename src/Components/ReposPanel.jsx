@@ -76,8 +76,8 @@ export default function ReposPanel() {
             style={{
               width: "100%",
               padding: "7px 12px 7px 32px",
-              borderRadius: 8,
-              border: "1px solid var(--border-base)",
+              borderRadius: 10,
+              border: "1px solid var(--border-subtle)",
               background: "var(--bg-input)",
               color: "var(--text-primary)",
               fontSize: 12,
@@ -119,23 +119,19 @@ export default function ReposPanel() {
                 key={repo._id}
                 style={{
                   background: "var(--bg-card)",
-                  border: "1px solid var(--border-base)",
-                  borderRadius: 12,
+                  borderRadius: 10,
                   padding: "18px 20px",
-                  boxShadow: "var(--shadow-sm)",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
                   gap: 14,
-                  transition: "border-color 0.15s, box-shadow 0.15s",
+                  transition: "box-shadow 0.15s",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = "var(--border-strong)";
-                  e.currentTarget.style.boxShadow = "var(--shadow-md)";
+                  e.currentTarget.style.boxShadow = "none";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "var(--border-base)";
-                  e.currentTarget.style.boxShadow = "var(--shadow-sm)";
+                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
                 <div>
@@ -202,7 +198,6 @@ export default function ReposPanel() {
                         fontSize: 10,
                         color: providerColor,
                         background: "var(--bg-card-subtle)",
-                        border: "1px solid var(--border-base)",
                         borderRadius: 4,
                         padding: "2px 7px",
                         fontWeight: 700,
@@ -221,7 +216,6 @@ export default function ReposPanel() {
                         fontSize: 10,
                         color: "var(--text-secondary)",
                         background: "var(--bg-card-subtle)",
-                        border: "1px solid var(--border-base)",
                         borderRadius: 4,
                         padding: "2px 7px",
                         fontWeight: 600,

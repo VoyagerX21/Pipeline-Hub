@@ -38,7 +38,7 @@ function DonutChart({ slices, size = 120, thickness = 20 }) {
 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: "rotate(-90deg)" }}>
-      <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--border-base)" strokeWidth={thickness} />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--border-subtle)" strokeWidth={thickness} />
       {arcs.map((arc, i) =>
         arc.value > 0 ? (
           <circle
@@ -90,7 +90,6 @@ function HBar({ label, count, color, total, Icon }) {
               color: "var(--text-primary)",
               fontFamily: "'JetBrains Mono', monospace",
               background: "var(--bg-card-subtle)",
-              border: "1px solid var(--border-base)",
               borderRadius: 4,
               padding: "1px 7px",
             }}
@@ -118,11 +117,9 @@ function MetricCard({ label, value, sub, accent, icon: Icon }) {
   return (
     <div
       style={{
-        background: "var(--bg-card)",
-        border: "1px solid var(--border-base)",
-        borderRadius: 14,
+        background: "var(--bg-card-subtle)",
+        borderRadius: 10,
         padding: "18px 20px",
-        boxShadow: "var(--shadow-sm)",
         display: "flex",
         flexDirection: "column",
         gap: 6,
@@ -333,10 +330,8 @@ export default function AnalyticsPanel() {
         <div
           style={{
             background: "var(--bg-card)",
-            border: "1px solid var(--border-base)",
-            borderRadius: 14,
+            borderRadius: 10,
             padding: 22,
-            boxShadow: "var(--shadow-sm)",
           }}
         >
           <SectionHeader title="Platform Distribution" accent="var(--primary)" />
@@ -373,10 +368,8 @@ export default function AnalyticsPanel() {
         <div
           style={{
             background: "var(--bg-card)",
-            border: "1px solid var(--border-base)",
-            borderRadius: 14,
+            borderRadius: 10,
             padding: 22,
-            boxShadow: "var(--shadow-sm)",
           }}
         >
           <SectionHeader title="Event Activity Types" accent="#8b5cf6" />
@@ -407,29 +400,25 @@ export default function AnalyticsPanel() {
       </div>
 
       {/* Activity Breakdown Bar Chart */}
-      <div
-        style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-base)",
-          borderRadius: 14,
-          padding: "22px 24px",
-          boxShadow: "var(--shadow-sm)",
-        }}
-      >
+        <div
+          style={{
+            background: "var(--bg-card)",
+            borderRadius: 10,
+            padding: "22px 24px",
+          }}
+        >
         <SectionHeader title="Volume Breakdown by Event Type" accent="var(--success)" />
         <VBarChart data={typeBarData} height={110} />
       </div>
 
       {/* Top Contributors Card */}
-      <div
-        style={{
-          background: "var(--bg-card)",
-          border: "1px solid var(--border-base)",
-          borderRadius: 14,
-          padding: 22,
-          boxShadow: "var(--shadow-sm)",
-        }}
-      >
+        <div
+          style={{
+            background: "var(--bg-card)",
+            borderRadius: 10,
+            padding: 22,
+          }}
+        >
         <SectionHeader title="Top Active Contributors" accent="var(--warning)" />
         {(!analytics.topActors || analytics.topActors.length === 0) ? (
           <div style={{ fontSize: 13, color: "var(--text-muted)", textAlign: "center", padding: "24px 0" }}>
@@ -452,7 +441,6 @@ export default function AnalyticsPanel() {
                   key={a.name}
                   style={{
                     background: "var(--bg-card-subtle)",
-                    border: "1px solid var(--border-base)",
                     borderRadius: 10,
                     padding: "12px 14px",
                     display: "flex",

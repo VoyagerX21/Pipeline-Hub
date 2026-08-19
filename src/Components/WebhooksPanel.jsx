@@ -49,12 +49,10 @@ function StatBox({ label, value, accent = "var(--primary)", loading }) {
     <div
       style={{
         background: "var(--bg-card)",
-        border: "1px solid var(--border-base)",
-        borderRadius: 12,
+        borderRadius: 10,
         padding: "16px 18px",
         flex: 1,
         minWidth: 140,
-        boxShadow: "var(--shadow-sm)",
       }}
     >
       <div
@@ -166,7 +164,6 @@ function WebhookCard({ wh }) {
     <div
       style={{
         background: "var(--bg-card-subtle)",
-        border: "1px solid var(--border-base)",
         borderRadius: 10,
         padding: "14px 16px",
         marginBottom: 10,
@@ -212,11 +209,9 @@ function SectionWrapper({ title, subtitle, open, onToggle, accent = "var(--prima
   return (
     <div
       style={{
-        border: "1px solid var(--border-base)",
-        borderRadius: 14,
+        borderRadius: 10,
         background: "var(--bg-card)",
         overflow: "hidden",
-        boxShadow: "var(--shadow-sm)",
       }}
     >
       <button
@@ -230,7 +225,7 @@ function SectionWrapper({ title, subtitle, open, onToggle, accent = "var(--prima
           padding: "16px 20px",
           background: "var(--bg-card)",
           border: "none",
-          borderBottom: open ? "1px solid var(--border-base)" : "none",
+          borderBottom: open ? "1px solid var(--border-subtle)" : "none",
           cursor: "pointer",
           textAlign: "left",
         }}
@@ -240,7 +235,7 @@ function SectionWrapper({ title, subtitle, open, onToggle, accent = "var(--prima
             width: 32,
             height: 32,
             borderRadius: 8,
-            background: `${accent}15`,
+            background: `${accent}12`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -304,7 +299,6 @@ function GlobalDashboard() {
       <div
         style={{
           background: "var(--bg-card-subtle)",
-          border: "1px solid var(--border-base)",
           borderRadius: 10,
           padding: "12px 16px",
           display: "flex",
@@ -390,7 +384,6 @@ function PersonalDashboard() {
       <div
         style={{
           background: "var(--bg-card-subtle)",
-          border: "1px solid var(--border-base)",
           borderRadius: 10,
           padding: "12px 16px",
           display: "flex",
@@ -445,7 +438,6 @@ function PersonalDashboard() {
               width: "100%",
               padding: "8px 0",
               background: "var(--bg-card-subtle)",
-              border: "1px solid var(--border-base)",
               borderRadius: 8,
               color: "var(--text-secondary)",
               fontSize: 12,

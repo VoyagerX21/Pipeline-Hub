@@ -26,7 +26,7 @@ export default function Header({ filteredCount }) {
     <header
       style={{
         height: 54,
-        borderBottom: "1px solid var(--border-base)",
+        borderBottom: "1px solid var(--border-subtle)",
         display: "flex",
         alignItems: "center",
         padding: "0 24px",
@@ -49,7 +49,7 @@ export default function Header({ filteredCount }) {
           {displayTitles[sectionName] || sectionName}
         </h1>
 
-        <div style={{ width: 1, height: 16, background: "var(--border-base)" }} />
+        <div style={{ width: 1, height: 16, background: "var(--border-subtle)" }} />
 
         <span
           style={{
@@ -71,18 +71,17 @@ export default function Header({ filteredCount }) {
           alignItems: "center",
           gap: 7,
           background: "var(--success-light)",
-          border: "1px solid var(--success-border)",
           padding: "4px 10px",
           borderRadius: 999,
         }}
       >
         <div
           style={{
-            width: 7,
-            height: 7,
+            width: 6,
+            height: 6,
             borderRadius: "50%",
             background: "var(--success)",
-            boxShadow: "0 0 8px rgba(16, 185, 129, 0.6)",
+            boxShadow: "0 0 6px rgba(16, 185, 129, 0.5)",
             animation: "pulseGlow 2s infinite ease-in-out",
           }}
         />

@@ -27,9 +27,8 @@ export default function EventDetail({ event, onClose }) {
           style={{
             width: 48,
             height: 48,
-            borderRadius: 12,
+            borderRadius: 10,
             background: "var(--bg-card-subtle)",
-            border: "1px solid var(--border-base)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -125,7 +124,7 @@ export default function EventDetail({ event, onClose }) {
           title="Close Inspector"
           style={{
             background: "var(--bg-card-subtle)",
-            border: "1px solid var(--border-base)",
+            border: "none",
             color: "var(--text-secondary)",
             cursor: "pointer",
             width: 30,
@@ -143,9 +142,8 @@ export default function EventDetail({ event, onClose }) {
       {/* Metadata Table */}
       <div
         style={{
-          border: "1px solid var(--border-base)",
-          borderRadius: 12,
-          background: "var(--bg-canvas)",
+          background: "var(--bg-card-subtle)",
+          borderRadius: 10,
           overflow: "hidden",
         }}
       >
@@ -157,7 +155,7 @@ export default function EventDetail({ event, onClose }) {
               justifyContent: "space-between",
               alignItems: "center",
               padding: "11px 16px",
-              borderBottom: idx === detailRows.length - 1 ? "none" : "1px solid var(--border-base)",
+              borderBottom: idx === detailRows.length - 1 ? "none" : "1px solid var(--border-subtle)",
               fontSize: 12,
             }}
           >
@@ -189,9 +187,8 @@ export default function EventDetail({ event, onClose }) {
       {/* Webhook Raw Payload Accordion */}
       <div
         style={{
-          border: "1px solid var(--border-base)",
-          borderRadius: 12,
-          background: "var(--bg-canvas)",
+          borderRadius: 10,
+          background: "var(--bg-card-subtle)",
           overflow: "hidden",
         }}
       >
@@ -203,7 +200,6 @@ export default function EventDetail({ event, onClose }) {
             alignItems: "center",
             justifyContent: "space-between",
             cursor: "pointer",
-            background: "var(--bg-card-subtle)",
             userSelect: "none",
           }}
         >
@@ -230,8 +226,8 @@ export default function EventDetail({ event, onClose }) {
                 handleCopy();
               }}
               style={{
-                background: "var(--bg-card)",
-                border: "1px solid var(--border-base)",
+                background: "var(--bg-canvas)",
+                border: "1px solid var(--border-subtle)",
                 borderRadius: 6,
                 padding: "3px 8px",
                 fontSize: 11,

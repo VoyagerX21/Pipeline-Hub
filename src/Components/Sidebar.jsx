@@ -40,7 +40,6 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
         top: 0,
         left: 0,
         background: "var(--bg-sidebar)",
-        borderRight: "1px solid var(--border-base)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -48,7 +47,6 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
         gap: 8,
         flexShrink: 0,
         zIndex: 40,
-        boxShadow: "var(--shadow-sm)",
       }}
     >
       {/* Brand Icon */}
@@ -69,7 +67,6 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
           letterSpacing: "-0.5px",
           cursor: "pointer",
           marginBottom: 12,
-          boxShadow: "0 4px 12px rgba(37, 99, 235, 0.25)",
         }}
       >
         P
@@ -83,21 +80,22 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
           width: 38,
           height: 38,
           borderRadius: "50%",
-          background: sidePanel === "profile" ? "var(--primary-light)" : "transparent",
-          border: `2px solid ${sidePanel === "profile" ? "var(--primary)" : "var(--border-base)"}`,
+          background: "transparent",
+          border: "none",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           padding: 0,
           marginBottom: 12,
+          outline: "none",
         }}
       >
         <Avatar avatarURL={user?.avatarUrl} name={user?.name || user?.email} size={34} />
       </button>
 
       {/* Nav items */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%", alignItems: "center" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, width: "100%", alignItems: "center" }}>
         {NAV_ITEMS.map((item) => {
           const active = pathname.startsWith(item.path);
           const Icon = item.icon;
@@ -107,8 +105,8 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
               onClick={() => navigate(item.path)}
               title={item.label}
               style={{
-                width: 42,
-                height: 42,
+                width: 40,
+                height: 40,
                 borderRadius: 10,
                 border: "none",
                 background: active ? "var(--primary-light)" : "transparent",
@@ -118,6 +116,7 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
                 alignItems: "center",
                 justifyContent: "center",
                 position: "relative",
+                outline: "none",
               }}
               onMouseEnter={(e) => {
                 if (!active) {
@@ -132,20 +131,7 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
                 }
               }}
             >
-              {active && (
-                <div
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    top: 8,
-                    bottom: 8,
-                    width: 3,
-                    borderRadius: "0 4px 4px 0",
-                    background: "var(--primary)",
-                  }}
-                />
-              )}
-              <Icon size={19} strokeWidth={active ? 2.3 : 1.8} />
+              <Icon size={18} strokeWidth={active ? 2.2 : 1.7} />
             </button>
           );
         })}
@@ -161,22 +147,23 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
           width: 36,
           height: 36,
           borderRadius: 8,
-          border: "1px solid var(--border-base)",
-          background: "var(--bg-card)",
-          color: "var(--text-secondary)",
+          border: "none",
+          background: "transparent",
+          color: "var(--text-muted)",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           marginBottom: 8,
+          outline: "none",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.background = "var(--bg-hover)";
           e.currentTarget.style.color = "var(--text-primary)";
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = "var(--bg-card)";
-          e.currentTarget.style.color = "var(--text-secondary)";
+          e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.color = "var(--text-muted)";
         }}
       >
         {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
@@ -190,21 +177,22 @@ export default function Sidebar({ sidePanel, setSidePanel, changeUser }) {
           width: 36,
           height: 36,
           borderRadius: 8,
-          border: "1px solid transparent",
-          background: "var(--danger-light)",
-          color: "var(--danger)",
+          border: "none",
+          background: "transparent",
+          color: "var(--text-muted)",
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          outline: "none",
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = "var(--danger)";
-          e.currentTarget.style.color = "#ffffff";
-        }}
-        onMouseLeave={(e) => {
           e.currentTarget.style.background = "var(--danger-light)";
           e.currentTarget.style.color = "var(--danger)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.color = "var(--text-muted)";
         }}
       >
         <LogOut size={16} />

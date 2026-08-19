@@ -1,6 +1,6 @@
 import { useState } from "react";
 import EventRow from "./EventRow.jsx";
-import { Search, Filter, Inbox } from "lucide-react";
+import { Search, Inbox } from "lucide-react";
 
 export default function EventsPanel({ events = [], selectedEvent, setSelectedEvent }) {
   const [filterPlatform, setFilterPlatform] = useState("all");
@@ -20,7 +20,7 @@ export default function EventsPanel({ events = [], selectedEvent, setSelectedEve
 
   const selectStyle = {
     background: "var(--bg-input)",
-    border: "1px solid var(--border-base)",
+    border: "1px solid var(--border-subtle)",
     borderRadius: 8,
     color: "var(--text-primary)",
     fontSize: 12,
@@ -38,7 +38,7 @@ export default function EventsPanel({ events = [], selectedEvent, setSelectedEve
           display: "flex",
           gap: 10,
           padding: "12px 18px",
-          borderBottom: "1px solid var(--border-base)",
+          borderBottom: "1px solid var(--border-subtle)",
           background: "var(--bg-canvas)",
           flexWrap: "wrap",
           alignItems: "center",
@@ -89,10 +89,6 @@ export default function EventsPanel({ events = [], selectedEvent, setSelectedEve
             color: "var(--text-muted)",
             fontFamily: "'JetBrains Mono', monospace",
             marginLeft: "auto",
-            background: "var(--bg-card-subtle)",
-            border: "1px solid var(--border-base)",
-            padding: "4px 8px",
-            borderRadius: 6,
           }}
         >
           {filtered.length} / {events.length}
@@ -123,7 +119,6 @@ export default function EventsPanel({ events = [], selectedEvent, setSelectedEve
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                border: "1px solid var(--border-base)",
               }}
             >
               <Inbox size={20} color="var(--text-muted)" />

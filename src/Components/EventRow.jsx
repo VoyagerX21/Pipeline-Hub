@@ -22,11 +22,10 @@ export default function EventRow({ event, onClick, selected }) {
         gap: 12,
         alignItems: "center",
         padding: "13px 18px",
-        borderBottom: "1px solid var(--border-base)",
+        borderBottom: "1px solid var(--border-subtle)",
         cursor: "pointer",
         background: selected ? "var(--primary-light)" : "transparent",
-        borderLeft: selected ? "3px solid var(--primary)" : "3px solid transparent",
-        transition: "background 0.15s, border-color 0.15s",
+        transition: "background 0.15s",
       }}
       onMouseEnter={(e) => {
         if (!selected) e.currentTarget.style.background = "var(--bg-hover)";
@@ -42,7 +41,6 @@ export default function EventRow({ event, onClick, selected }) {
           height: 32,
           borderRadius: 8,
           background: "var(--bg-card-subtle)",
-          border: "1px solid var(--border-base)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -77,10 +75,6 @@ export default function EventRow({ event, onClick, selected }) {
                 gap: 3,
                 fontSize: 11,
                 color: "var(--text-muted)",
-                background: "var(--bg-card-subtle)",
-                border: "1px solid var(--border-base)",
-                padding: "1px 6px",
-                borderRadius: 4,
                 fontFamily: "'JetBrains Mono', monospace",
               }}
             >
